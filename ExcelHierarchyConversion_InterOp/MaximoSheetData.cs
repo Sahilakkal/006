@@ -125,41 +125,42 @@ namespace ExcelHierarchyConversion_InterOp
 
                         //----------------------Handling ReminderWindow and schedulign type ------------------------\\
 
-                        for(int i = 0; i < singleRow.Interval.Count, i++)
+                        /*for (int i = 0; i < singleRow.Interval.Count, i++)
                         {
 
-                        }
-                        string unit = rows[i].CounterType;
 
-                        if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
-                        {
-                            rows[i].Reminder = Math.Round(0.07 * interval * 7);
-                            rows[i].Window = Math.Round(0.1 * interval * 7);
-                        }
+                            string unit = rows[i].CounterType;
 
-                        else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
-                        {
-                            rows[i].Reminder = Math.Round(0.07 * interval * 30);
-                            rows[i].Window = Math.Round(0.1 * interval * 30);
-                        }
+                            if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
+                            {
+                                rows[i].Reminder = Math.Round(0.07 * interval * 7);
+                                rows[i].Window = Math.Round(0.1 * interval * 7);
+                            }
 
-                        else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
-                        {
-                            rows[i].Reminder = Math.Round(0.07 * interval * 365);
-                            rows[i].Window = Math.Round(0.1 * interval * 365);
-                        }
+                            else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
+                            {
+                                rows[i].Reminder = Math.Round(0.07 * interval * 30);
+                                rows[i].Window = Math.Round(0.1 * interval * 30);
+                            }
 
-                        else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
-                        {
-                            rows[i].Reminder = Math.Round(0.07 * interval);
-                            rows[i].Window = Math.Round(0.1 * interval);
-                        }
+                            else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
+                            {
+                                rows[i].Reminder = Math.Round(0.07 * interval * 365);
+                                rows[i].Window = Math.Round(0.1 * interval * 365);
+                            }
 
-                        else if (string.Equals(unit, "Hours", StringComparison.OrdinalIgnoreCase))
-                        {
-                            rows[i].Reminder = Math.Round(0.07 * interval);
-                            rows[i].Window = Math.Round(0.1 * interval);
-                        }
+                            else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
+                            {
+                                rows[i].Reminder = Math.Round(0.07 * interval);
+                                rows[i].Window = Math.Round(0.1 * interval);
+                            }
+
+                            else if (string.Equals(unit, "Hours", StringComparison.OrdinalIgnoreCase))
+                            {
+                                rows[i].Reminder = Math.Round(0.07 * interval);
+                                rows[i].Window = Math.Round(0.1 * interval);
+                            }
+                        }*/
                     }
                     rows.Add(singleRow);
                 }

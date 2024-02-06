@@ -21,7 +21,7 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> ReminderWindowUnit { get; set; } // X [24]
         public List<string> ResponsibleDepartment { get; set; } // Y [25]
         public List<string> Round { get; set; } // Z[26]
-        
+
 
         public JobSheetData()
         {
@@ -91,8 +91,8 @@ namespace ExcelHierarchyConversion_InterOp
 
                             i++;
                             temp++;
-                          
                         }
+
                     }
 
                     rows.Add(singleRow);

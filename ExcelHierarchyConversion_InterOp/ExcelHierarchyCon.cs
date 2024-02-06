@@ -978,12 +978,18 @@ namespace ExcelHierarchyConversion_InterOp
                     jobSheetData = obj_Jobsheet.ReadDataFromJobSheet(jobSheetWorksheet);
 
                     OutputSheetData obj_OutputSheetData= new OutputSheetData();
-                    
-                    obj_OutputSheetData.MapDataToOutputSheet(updatedData,jobSheetData);
-                   
+                    List<OutputSheetData> totalData;
+                  totalData=  obj_OutputSheetData.MapDataToOutputSheet(updatedData,jobSheetData,maximoSheetData);
 
-                        label_operationStatus.Text = "Writing In verification sheet";
-                      //  WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
+                    Workbook outworkbook = excelApp.Workbooks.Open(templateFilePath);
+                    Worksheet worksheeeeet = outworkbook.Sheets[1];
+                    
+
+                    obj_OutputSheetData.WriteDataInOutput(totalData,worksheeeeet);
+                    worksheeeeet.SaveAs($"{Path.Combine(outputPathTextBox.Text,"1213.xlsx")}");
+
+                    label_operationStatus.Text = "Writing In verification sheet";
+                       WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
                         progressBar1.Value = 30;
                         label_operationStatus.Text = "Writing In output sheet";
                       //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
@@ -1029,6 +1035,8 @@ namespace ExcelHierarchyConversion_InterOp
                             MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                         }
+
+
                 }
                 catch (System.Runtime.InteropServices.COMException comEx)
                 {
