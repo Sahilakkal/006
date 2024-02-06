@@ -925,6 +925,7 @@ namespace ExcelHierarchyConversion_InterOp
                 string logFilePath = Path.Combine(inputDirectoryPath, $"ErrorLogs_{currentDate}.txt");
                 string templateFilePath = Path.Combine(SysApp.StartupPath, "Output template.xlsx");
                 string templateFilePath_JobSheet = Path.Combine(SysApp.StartupPath, "Jobs Sheet.xlsx");
+                string maximoSheetInputPath = txtBox_inputPathMaximo.Text;
                 string outputFilePath = Path.Combine(inputDirectoryPath, $"{inputFileName}_Output_{currentDate}.xlsx");
                 string verificationFileSavePath = Path.Combine(inputDirectoryPath, $"{verificationFileName}_OUTPUT_{currentDate}.xlsx");
 
@@ -955,6 +956,16 @@ namespace ExcelHierarchyConversion_InterOp
                     updatedData = ProcessData(storedData, logFilePath);  //Processing the Data
                     VerifyData(ref updatedData, ref verificationData);   // verifying the data
 
+
+                    //----------------------Handling the Maximo sheet Part [006] ------------------\\
+                    Workbook maximoWorkbook = excelApp.Workbooks.Open(maximoSheetInputPath);
+                    Worksheet maximoWorksheet = maximoWorkbook.Sheets[1];
+
+                    List<MaximoSheetData> maximoSheetData;
+
+                    MaximoSheetData obj_maximo=new MaximoSheetData();
+
+                    maximoSheetData=  obj_maximo.ReadDataFromMaximoSheet(maximoWorksheet);
 
                     //----------------------Handling the Jobsheets Part [006] ------------------\\
 
@@ -1131,6 +1142,13 @@ namespace ExcelHierarchyConversion_InterOp
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void btn_UploadMaximoSheet_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog12 = new OpenFileDialog();
+            openFileDialog12.ShowDialog();
+            txtBox_inputPathMaximo.Text=openFileDialog12.FileName;
         }
     }
 }
