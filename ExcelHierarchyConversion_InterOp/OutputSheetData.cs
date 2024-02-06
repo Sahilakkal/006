@@ -28,12 +28,10 @@ namespace ExcelHierarchyConversion_InterOp
         public string SerialNo { get; set; } //  N [14]
         public string MaximoEq { get; set; } //  O [15]
         public string MaximoEqDescription { get; set; } //  P [16]
-
         public string ColorYellow { get; set; }
         public string ColorGreen { get; set; }
-
-
         public JobSheetData dataFromJobSheet;
+        public MaximoSheetData dataFromMaximoSheet;
 
         public OutputSheetData()
         {
@@ -54,8 +52,9 @@ namespace ExcelHierarchyConversion_InterOp
             MaximoEqDescription = string.Empty;
             dataFromJobSheet = new JobSheetData();
         }
-        public List<OutputSheetData> MapDataToOutputSheet(List<List<string>> outputData, [Optional] List<JobSheetData> jobSheetData)
+        public List<OutputSheetData> MapDataToOutputSheet(List<List<string>> outputData, List<JobSheetData> jobSheetData, [Optional] List<MaximoSheetData> maximoSheetData)
         {
+            //lalit will work on this function i have made a parameter option you will work on this and map the dataFromMaximoSheet propertty of outputsheet class with objects present in maximoSheetdata which is passed as paramter in function . I have already map the JobsheetData and set the property datafromJobsheet of this class
             List<OutputSheetData> outputSheetData = new List<OutputSheetData>();
 
             foreach (List<string> row in outputData)
@@ -97,5 +96,6 @@ namespace ExcelHierarchyConversion_InterOp
 
         }
 
+       
     }
 }
