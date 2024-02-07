@@ -6,6 +6,7 @@ using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,6 +28,10 @@ namespace ExcelHierarchyConversion_InterOp
         public string ComponentTypeCode { get; set; } // H [8]
         public string ComponentType { get; set; } //  I [9]
 
+        public string MakerColor { get; set; }
+        public string ModelColor { get; set; }
+        public string SerialColor { get; set; }
+        public string MaximoEqColor { get; set; }
 
 
 
@@ -87,6 +92,14 @@ namespace ExcelHierarchyConversion_InterOp
                 singleRow.SerialNo = row[13];
                 singleRow.MaximoEq = row[14];
                 singleRow.MaximoEqDescription = row[15];
+                singleRow.MaximoEqDescription = row[15];
+                singleRow.MaximoEqDescription = row[15];
+                singleRow.MaximoEqDescription = row[15];
+                singleRow.MaximoEqDescription = row[15];
+                singleRow.MakerColor = row[16];
+                singleRow.ModelColor = row[17];
+                singleRow.SerialColor = row[18];
+                singleRow.MaximoEqColor = row[19];
 
                 for (int i = 0; i < jobSheetData.Count; i++)
                 {
@@ -107,7 +120,7 @@ namespace ExcelHierarchyConversion_InterOp
                     {
                         singleRow.dataFromMaximoSheet = singleRowMaximoData;
 
-                        MessageBox.Show("data added" + singleRowMaximoData.AssetNumber);
+                        //  MessageBox.Show("data added" + singleRowMaximoData.AssetNumber);
                         break;
                     }
                 }
@@ -119,7 +132,7 @@ namespace ExcelHierarchyConversion_InterOp
 
         }
 
-        public void WriteDataInOutput(List<OutputSheetData> outputSheetData,Worksheet worksheet)
+        public void WriteDataInOutput(List<OutputSheetData> outputSheetData, Worksheet worksheet)
         {
 
 
@@ -148,41 +161,76 @@ namespace ExcelHierarchyConversion_InterOp
                 OutputSheetData rowData = outputSheetData[i];
                 int countMaximo = 0;
                 int countJob = 0;
+                dataRow = dataTable.Rows.Add();
+                AddStaticColumns(i, rowData, ref dataRow);
 
-
-                while (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count || countJob != rowData.dataFromJobSheet.JobCode.Count)
+                int temp = 0;
+                while (countJob != rowData.dataFromJobSheet.JobCode.Count)
                 {
-                    dataRow = dataTable.Rows.Add();
-                    AddStaticColumns(i, rowData, ref dataRow);
-
-                    if (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count)
+                    if (countJob == 0)
                     {
-                        dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
-                        dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
-                        dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
-                        //dataRow[26] = rowData.dataFromMaximoSheet.Reminder[countJob];
-                        //dataRow[27] = rowData.dataFromMaximoSheet.Window[countJob];
-                        // dataRow[29] = rowData.dataFromMaximoSheet.ResponsibleDepartment[countJob];
-                        dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
-                        dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
-                        dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countJob];
-                        dataRow[22] = rowData.dataFromMaximoSheet.Interval[countJob];
-                        countMaximo++;
-
-                    }
-
-                    if (countJob != rowData.dataFromJobSheet.JobCode.Count)
-                    {
+                        MessageBox.Show("sd");
                         dataRow[19] = rowData.dataFromJobSheet.JobCode[countJob];
                         dataRow[20] = rowData.dataFromJobSheet.JobName[countJob];
 
+                        dataRow[22] = rowData.dataFromJobSheet.Interval[countJob];
                         dataRow[23] = rowData.dataFromJobSheet.CounterType[countJob];
                         dataRow[24] = rowData.dataFromJobSheet.JobCategory[countJob];
                         dataRow[25] = rowData.dataFromJobSheet.JobType[countJob];
+                        if (dataRow[22].ToString() != "")
+                        {
+                            dataRow[26] = rowData.dataFromJobSheet.Reminder[countJob];
+                            dataRow[27] = rowData.dataFromJobSheet.Window[countJob];
+                            dataRow[31] = rowData.dataFromJobSheet.SchedulingType[countJob];
+
+                        }
+                        dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
-                        countJob++;
-                        //dataRow[30] = rowData.dataFromJobSheet.Round[countJob];
                     }
+                    else
+                    {
+                        dataRow = dataTable.Rows.Add();
+                        AddStaticColumns(i, rowData, ref dataRow);
+                        dataRow[19] = rowData.dataFromJobSheet.JobCode[countJob];
+                        dataRow[20] = rowData.dataFromJobSheet.JobName[countJob];
+                        dataRow[22] = rowData.dataFromJobSheet.Interval[countJob];
+                        dataRow[23] = rowData.dataFromJobSheet.CounterType[countJob];
+                        dataRow[24] = rowData.dataFromJobSheet.JobCategory[countJob];
+                        dataRow[25] = rowData.dataFromJobSheet.JobType[countJob];
+                        if (dataRow[22].ToString() != "")
+                        {
+                            dataRow[26] = rowData.dataFromJobSheet.Reminder[countJob];
+                            dataRow[27] = rowData.dataFromJobSheet.Window[countJob];
+                            dataRow[31] = rowData.dataFromJobSheet.SchedulingType[countJob];
+
+                        }
+                        dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
+                        dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
+                    }
+
+                    countJob++;
+                }
+                while (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count)
+                {
+                    dataRow = dataTable.Rows.Add();
+                    AddStaticColumns(i, rowData, ref dataRow);
+                    dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
+                    dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
+                    dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
+                    dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
+                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
+                    //  dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
+                    dataRow[21] = MakeJobdescription(rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo]); // job Descriptions
+                    dataRow[20] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];  // Job Name
+                    dataRow[22] = rowData.dataFromMaximoSheet.Interval[countMaximo];
+                    dataRow[31] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
+                    dataRow[26] = rowData.dataFromMaximoSheet.Reminder[countMaximo];
+                    dataRow[27] = rowData.dataFromMaximoSheet.Window[countMaximo];
+                    dataRow[29] = rowData.dataFromMaximoSheet.ResponsibleDepartment[countMaximo];
+                    dataRow[23] = rowData.dataFromMaximoSheet.CounterType[countMaximo];
+                    dataRow[35] = "Fleet Maintenance System";
+
+                    countMaximo++;
                 }
 
 
@@ -208,11 +256,26 @@ namespace ExcelHierarchyConversion_InterOp
             Range outputRange = worksheet.Range[$"A2:AM{rows}"];
             outputRange.Value = array2D;
 
-       
 
         }
 
+        public string MakeJobdescription(string jobdescription)
+        {
+            string jobDesc = "Procedure: \n";
+            int i = jobdescription.IndexOf('-');
+            string[] arr = jobdescription.Split('\n');
+            foreach (string s in arr)
+            {
+                if (s.Length > i)
+                {
+                    string temp = s.Substring(i).Trim();
+                    jobDesc += "-" + temp + "\n";
+                }
+            }
 
+            return jobDesc;
+
+        }
         public void AddStaticColumns(int i1, OutputSheetData rowData, ref DataRow dataRow)
         {
 

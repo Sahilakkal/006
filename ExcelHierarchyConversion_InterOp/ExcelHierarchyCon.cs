@@ -340,191 +340,203 @@ namespace ExcelHierarchyConversion_InterOp
             {
                 for (int i = 0; i < updList.Count; i++)
                 {
+                    bool isMaximoContainsComma = false;
                     if (updList[i].Count > maximoIndex && updList[i][maximoIndex].Contains(componentNo))
                     {
                         string maximoValue = updList[i][maximoIndex];
-                        string trimmedMaximoValue = maximoValue;
+                        string[] totalMaximo;
+
 
                         // Check if maximoValue contains a comma
                         if (maximoValue.Contains(","))
                         {
+
+                            totalMaximo = maximoValue.Split(',');
+
                             // Trim the string after the comma for comparison
-                            trimmedMaximoValue = maximoValue.Split(',')[0].Trim();
+                            //trimmedMaximoValue = maximoValue.Split(',');
+
                             updList[i][19] = "Yellow";
                         }
 
-                        if (trimmedMaximoValue == componentNo)
+                        else
                         {
-                            for (int j = 0; j < verList.Count; j++)
+                            totalMaximo = new string[1];
+                            totalMaximo[0] = maximoValue;
+                        }
+
+                        foreach (string trimmedMaximoValue in totalMaximo)
+                        {
+                            if (trimmedMaximoValue == componentNo)
                             {
-                                if (verList[j].Count > componentIndex && verList[j][componentIndex] == componentNo)
+                                for (int j = 0; j < verList.Count; j++)
                                 {
-                                    updIdx = i; // updList index
-                                    verIdx = j; // verList index
-
-
-
-                                    if (!string.IsNullOrEmpty(componentNo) && !string.IsNullOrWhiteSpace(componentNo))
+                                    if (verList[j].Count > componentIndex && verList[j][componentIndex] == componentNo)
                                     {
-
-                                        verList[verIdx][5] = "Green";
-                                        updList[updIdx][5] = verList[verIdx][2];         // adding CRITICALITY from STATUS
-
-                                        string makerNameInVer = verList[verIdx][1];    // MAKER Names
-                                        string makerNameInUpd = updList[updIdx][11];
-                                        string[] substrings = makerNameInVer.Split(new string[] { " || " }, StringSplitOptions.None);
-                                        string makerFullNameInVer;
-                                        string makerShortNameInVer;
-                                        if (substrings.Length == 2)
-                                        {
-                                            makerFullNameInVer = substrings[0];
-                                            makerShortNameInVer = substrings[1];
-                                        }
-
-                                        else
-                                        {
-                                            makerFullNameInVer = makerNameInVer;
-                                            makerShortNameInVer = makerNameInVer;
-                                        }
-
-                                        string serialNoInVer = verList[verIdx][3];     // SERIAL
-                                        string serialNoInUpd = updList[updIdx][13];
-
-                                        string modelInVer = verList[verIdx][4];        // MODEL
-                                        string modelInUpd = updList[updIdx][12];
-
-                                        string colorInVer = verList[verIdx][5];       //represents color for COMPONENT no in verification sheet
-                                        string makercolorInUpd = updList[updIdx][16]; // represents color for MAKER in Output
-                                        string modelcolorInUpd = updList[updIdx][17]; // represents color for MODEL in Output
-                                        string serialcolorInUpd = updList[updIdx][18];// // represents color for SERIAL in Output
+                                        updIdx = i; // updList index
+                                        verIdx = j; // verList index
 
 
-                                        if ((makerShortNameInVer == makerNameInUpd || makerFullNameInVer == makerNameInUpd) || (serialNoInVer == serialNoInUpd) || modelInVer == modelInUpd)
+
+                                        if (!string.IsNullOrEmpty(componentNo) && !string.IsNullOrWhiteSpace(componentNo))
                                         {
 
-                                            if (((makerShortNameInVer == makerNameInUpd) || (makerFullNameInVer == makerNameInUpd)) && (!string.IsNullOrEmpty(makerShortNameInVer) || !string.IsNullOrEmpty(makerFullNameInVer)))
+                                            verList[verIdx][5] = "Green";
+                                            updList[updIdx][5] = verList[verIdx][2];         // adding CRITICALITY from STATUS
+
+                                            string makerNameInVer = verList[verIdx][1];    // MAKER Names
+                                            string makerNameInUpd = updList[updIdx][11];
+                                            string[] substrings = makerNameInVer.Split(new string[] { " || " }, StringSplitOptions.None);
+                                            string makerFullNameInVer;
+                                            string makerShortNameInVer;
+                                            if (substrings.Length == 2)
                                             {
-                                                updList[updIdx][16] = "Green";
+                                                makerFullNameInVer = substrings[0];
+                                                makerShortNameInVer = substrings[1];
                                             }
 
-                                            if (modelInVer == modelInUpd && !string.IsNullOrEmpty(modelInVer))
+                                            else
                                             {
-                                                updList[updIdx][17] = "Green";
-
+                                                makerFullNameInVer = makerNameInVer;
+                                                makerShortNameInVer = makerNameInVer;
                                             }
 
-                                            if (serialNoInUpd == serialNoInVer && !string.IsNullOrEmpty(serialNoInVer))
-                                            {
-                                                updList[updIdx][18] = "Green";
-                                            }
+                                            string serialNoInVer = verList[verIdx][3];     // SERIAL
+                                            string serialNoInUpd = updList[updIdx][13];
+
+                                            string modelInVer = verList[verIdx][4];        // MODEL
+                                            string modelInUpd = updList[updIdx][12];
+
+                                            string colorInVer = verList[verIdx][5];       //represents color for COMPONENT no in verification sheet
+                                            string makercolorInUpd = updList[updIdx][16]; // represents color for MAKER in Output
+                                            string modelcolorInUpd = updList[updIdx][17]; // represents color for MODEL in Output
+                                            string serialcolorInUpd = updList[updIdx][18];// // represents color for SERIAL in Output
 
 
-
-
-                                        }  // when MAKER MODEL SERIAL  any one is same in lists
-
-                                        if (((makerFullNameInVer != makerNameInUpd) || makerShortNameInVer != makerNameInUpd || (serialNoInVer != serialNoInUpd) || modelInVer != modelInUpd))
-                                        {
-
-                                            if (string.IsNullOrEmpty(makerNameInUpd) && (!string.IsNullOrEmpty(makerFullNameInVer) || !string.IsNullOrEmpty(makerShortNameInVer)))
-                                            {
-
-                                                updList[updIdx][11] = makerShortNameInVer;     //copying values of MAKER from ver to upd
-                                                updList[updIdx][16] = "Orange";
-
-                                            } // when MAKER is not present in output but present in verification sheet
-
-                                            if (string.IsNullOrEmpty(modelInUpd) && !string.IsNullOrEmpty(modelInVer))
-                                            {
-                                                updList[updIdx][12] = modelInVer;
-                                                updList[updIdx][17] = "Orange";
-
-                                            }// when MODEL is not present in output but present in verification sheet
-
-
-                                            if (string.IsNullOrEmpty(serialNoInUpd) && !string.IsNullOrEmpty(serialNoInVer))
-                                            {
-                                                updList[updIdx][13] = serialNoInVer;
-                                                updList[updIdx][18] = "Orange";
-
-                                            } // when SERIAL is not present in output but present in verification sheet
-
-
-                                            if (!string.IsNullOrEmpty(makerNameInUpd) && (!string.IsNullOrEmpty(makerNameInVer) || !string.IsNullOrEmpty(makerFullNameInVer)) && ((makerNameInUpd != makerFullNameInVer) || (makerNameInUpd != makerShortNameInVer)))
+                                            if ((makerShortNameInVer == makerNameInUpd || makerFullNameInVer == makerNameInUpd) || (serialNoInVer == serialNoInUpd) || modelInVer == modelInUpd)
                                             {
 
-                                                if (makerNameInVer.Contains(makerNameInUpd) && makerNameInVer.Contains("||"))
+                                                if (((makerShortNameInVer == makerNameInUpd) || (makerFullNameInVer == makerNameInUpd)) && (!string.IsNullOrEmpty(makerShortNameInVer) || !string.IsNullOrEmpty(makerFullNameInVer)))
                                                 {
                                                     updList[updIdx][16] = "Green";
                                                 }
-                                                else
+
+                                                if (modelInVer == modelInUpd && !string.IsNullOrEmpty(modelInVer))
                                                 {
-                                                    updList[updIdx][16] = "Red";
+                                                    updList[updIdx][17] = "Green";
 
                                                 }
 
+                                                if (serialNoInUpd == serialNoInVer && !string.IsNullOrEmpty(serialNoInVer))
+                                                {
+                                                    updList[updIdx][18] = "Green";
+                                                }
 
-                                            }  // when both MAKERS are non empty and not equal
 
-                                            if (!string.IsNullOrEmpty(modelInUpd) && !string.IsNullOrEmpty(modelInVer) && modelInUpd != modelInVer)
+
+
+                                            }  // when MAKER MODEL SERIAL  any one is same in lists
+
+                                            if (((makerFullNameInVer != makerNameInUpd) || makerShortNameInVer != makerNameInUpd || (serialNoInVer != serialNoInUpd) || modelInVer != modelInUpd))
                                             {
-                                                updList[updIdx][17] = "Red";
 
-                                            }  // when both MODEL are non empty and not equal
+                                                if (string.IsNullOrEmpty(makerNameInUpd) && (!string.IsNullOrEmpty(makerFullNameInVer) || !string.IsNullOrEmpty(makerShortNameInVer)))
+                                                {
 
-                                            if (!string.IsNullOrEmpty(serialNoInUpd) && !string.IsNullOrEmpty(serialNoInVer) && serialNoInUpd != serialNoInVer)
+                                                    updList[updIdx][11] = makerShortNameInVer;     //copying values of MAKER from ver to upd
+                                                    updList[updIdx][16] = "Orange";
+
+                                                } // when MAKER is not present in output but present in verification sheet
+
+                                                if (string.IsNullOrEmpty(modelInUpd) && !string.IsNullOrEmpty(modelInVer))
+                                                {
+                                                    updList[updIdx][12] = modelInVer;
+                                                    updList[updIdx][17] = "Orange";
+
+                                                }// when MODEL is not present in output but present in verification sheet
+
+
+                                                if (string.IsNullOrEmpty(serialNoInUpd) && !string.IsNullOrEmpty(serialNoInVer))
+                                                {
+                                                    updList[updIdx][13] = serialNoInVer;
+                                                    updList[updIdx][18] = "Orange";
+
+                                                } // when SERIAL is not present in output but present in verification sheet
+
+
+                                                if (!string.IsNullOrEmpty(makerNameInUpd) && (!string.IsNullOrEmpty(makerNameInVer) || !string.IsNullOrEmpty(makerFullNameInVer)) && ((makerNameInUpd != makerFullNameInVer) || (makerNameInUpd != makerShortNameInVer)))
+                                                {
+
+                                                    if (makerNameInVer.Contains(makerNameInUpd) && makerNameInVer.Contains("||"))
+                                                    {
+                                                        updList[updIdx][16] = "Green";
+                                                    }
+                                                    else
+                                                    {
+                                                        updList[updIdx][16] = "Red";
+
+                                                    }
+
+
+                                                }  // when both MAKERS are non empty and not equal
+
+                                                if (!string.IsNullOrEmpty(modelInUpd) && !string.IsNullOrEmpty(modelInVer) && modelInUpd != modelInVer)
+                                                {
+                                                    updList[updIdx][17] = "Red";
+
+                                                }  // when both MODEL are non empty and not equal
+
+                                                if (!string.IsNullOrEmpty(serialNoInUpd) && !string.IsNullOrEmpty(serialNoInVer) && serialNoInUpd != serialNoInVer)
+                                                {
+                                                    updList[updIdx][18] = "Red";
+
+                                                }  // when both SERIAL number are non empty and not equal
+
+                                                if (!string.IsNullOrEmpty(makerNameInUpd) && (string.IsNullOrEmpty(makerFullNameInVer) || string.IsNullOrEmpty(makerShortNameInVer)))
+                                                {
+                                                    updList[updIdx][16] = "Blue";
+
+                                                }   // when MAKER in verification sheet is empty and it is not empty in output
+
+                                                if (!string.IsNullOrEmpty(modelInUpd) && string.IsNullOrEmpty(modelInVer))
+                                                {
+                                                    updList[updIdx][17] = "Blue";
+
+                                                }   // when MODEL in verification sheet is empty and it is not empty in output
+
+                                                if (!string.IsNullOrEmpty(serialNoInUpd) && string.IsNullOrEmpty(serialNoInVer))
+                                                {
+                                                    updList[updIdx][18] = "Blue";
+
+                                                }    // when SERIIAL in verification sheet is empty and it is not empty in output
+
+                                            }  //Handling MAKER MODEL SERIAL NO color scheme
+
+                                            if (updList[updIdx][11].Contains("||"))
                                             {
-                                                updList[updIdx][18] = "Red";
+                                                string[] parts = updList[updIdx][11].Split(new string[] { "||" }, StringSplitOptions.None);
 
-                                            }  // when both SERIAL number are non empty and not equal
+                                                if (parts.Length == 2)
+                                                {
+                                                    updList[updIdx][11] = parts[1];
+                                                }
 
-                                            if (!string.IsNullOrEmpty(makerNameInUpd) && (string.IsNullOrEmpty(makerFullNameInVer) || string.IsNullOrEmpty(makerShortNameInVer)))
-                                            {
-                                                updList[updIdx][16] = "Blue";
 
-                                            }   // when MAKER in verification sheet is empty and it is not empty in output
+                                            }    //  Handling MAKER full name and MAKER short Name
+                                        }  //comparing data between verififcation sheet and output sheet
 
-                                            if (!string.IsNullOrEmpty(modelInUpd) && string.IsNullOrEmpty(modelInVer))
-                                            {
-                                                updList[updIdx][17] = "Blue";
-
-                                            }   // when MODEL in verification sheet is empty and it is not empty in output
-
-                                            if (!string.IsNullOrEmpty(serialNoInUpd) && string.IsNullOrEmpty(serialNoInVer))
-                                            {
-                                                updList[updIdx][18] = "Blue";
-
-                                            }    // when SERIIAL in verification sheet is empty and it is not empty in output
-
-                                        }  //Handling MAKER MODEL SERIAL NO color scheme
-
-                                        if (updList[updIdx][11].Contains("||"))
+                                        if (updList[updIdx][16] == "Green" && updList[updIdx][17] == "Green" && updList[updIdx][18] == "Green")
                                         {
-                                            string[] parts = updList[updIdx][11].Split(new string[] { "||" }, StringSplitOptions.None);
-
-                                            if (parts.Length == 2)
-                                            {
-                                                updList[updIdx][11] = parts[1];
-                                            }
+                                            // set Green color for this row
+                                            updList[updIdx][10] = "Details Provided are Correct";
 
 
-                                        }    //  Handling MAKER full name and MAKER short Name
-                                    }  //comparing data between verififcation sheet and output sheet
-
-                                    if (updList[updIdx][16] == "Green" && updList[updIdx][17] == "Green" && updList[updIdx][18] == "Green")
-                                    {
-                                        // set Green color for this row
-                                        updList[updIdx][10] = "Details Provided are Correct";
-
-
-                                    }
-
-
-
-                                    break;
-                                }  // handling the Case where maximo Index Matches with component number
+                                        }
+                                        break;
+                                    }  // handling the Case where maximo Index Matches with component number
+                                }
+                                break;
                             }
-                            break;
                         }
                     }
                 }
@@ -884,7 +896,7 @@ namespace ExcelHierarchyConversion_InterOp
 
 
 
-        private  void convertButton_Click(object sender, EventArgs e)
+        private void convertButton_Click(object sender, EventArgs e)
         {
 
             if (string.IsNullOrEmpty(inputPathTextBox.Text) || string.IsNullOrEmpty(outputPathTextBox.Text))
@@ -963,9 +975,9 @@ namespace ExcelHierarchyConversion_InterOp
 
                     List<MaximoSheetData> maximoSheetData;
 
-                    MaximoSheetData obj_maximo=new MaximoSheetData();
+                    MaximoSheetData obj_maximo = new MaximoSheetData();
 
-                    maximoSheetData=  obj_maximo.ReadDataFromMaximoSheet(maximoWorksheet);
+                    maximoSheetData = obj_maximo.ReadDataFromMaximoSheet(maximoWorksheet);
 
                     //----------------------Handling the Jobsheets Part [006] ------------------\\
 
@@ -977,64 +989,66 @@ namespace ExcelHierarchyConversion_InterOp
                     JobSheetData obj_Jobsheet = new JobSheetData();
                     jobSheetData = obj_Jobsheet.ReadDataFromJobSheet(jobSheetWorksheet);
 
-                    OutputSheetData obj_OutputSheetData= new OutputSheetData();
+                    OutputSheetData obj_OutputSheetData = new OutputSheetData();
                     List<OutputSheetData> totalData;
-                  totalData=  obj_OutputSheetData.MapDataToOutputSheet(updatedData,jobSheetData,maximoSheetData);
+                    totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData);
 
                     Workbook outworkbook = excelApp.Workbooks.Open(templateFilePath);
                     Worksheet worksheeeeet = outworkbook.Sheets[1];
-                    
 
-                    obj_OutputSheetData.WriteDataInOutput(totalData,worksheeeeet);
-                    worksheeeeet.SaveAs($"{Path.Combine(outputPathTextBox.Text,"1213.xlsx")}");
+
 
                     label_operationStatus.Text = "Writing In verification sheet";
-                       WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
-                        progressBar1.Value = 30;
-                        label_operationStatus.Text = "Writing In output sheet";
-                      //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
+                    WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
+                    progressBar1.Value = 30;
 
-                        DateTime endTime = DateTime.Now;
-                        TimeSpan duration = endTime - startTime;
-                        string formattedTime = $"{(int)duration.TotalMinutes} minutes {duration.Seconds} seconds";
-                        MessageBox.Show($"File Converted Successfully. Time taken: {formattedTime}", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    obj_OutputSheetData.WriteDataInOutput(totalData, worksheeeeet);
+                    worksheeeeet.SaveAs($"{Path.Combine(outputPathTextBox.Text, "1213.xlsx")}");
+                    label_operationStatus.Text = "Writing In output sheet";
+                    //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
+
+                    
+                    DateTime endTime = DateTime.Now;
+                    TimeSpan duration = endTime - startTime;
+                    string formattedTime = $"{(int)duration.TotalMinutes} minutes {duration.Seconds} seconds";
+                    MessageBox.Show($"File Converted Successfully. Time taken: {formattedTime}", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
 
 
 
-                        if (!CheckBox_splitFiles.Checked)
+                    if (!CheckBox_splitFiles.Checked)
+                    {
+                        progressBar1.Value = 100;
+                    }    // if split files check box is checked then no need to further increase the vakue of progressBar
+                    progressBar1.Value = 70;
+
+                    if (CheckBox_splitFiles.Checked)
+                    {
+                        label_operationStatus.Text = "Splitting Files";
+                        MessageBox.Show("Splitting Files.........", "It may take while", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                        splittedData = SplitData(updatedData);
+                        foreach (var workBookk in splittedData)
                         {
-                            progressBar1.Value = 100;
-                        }    // if split files check box is checked then no need to further increase the vakue of progressBar
-                        progressBar1.Value = 70;
 
-                        if (CheckBox_splitFiles.Checked)
-                        {
-                            label_operationStatus.Text = "Splitting Files";
-                            MessageBox.Show("Splitting Files.........", "It may take while", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            string firstValue = workBookk[0][0];
 
-                            splittedData = SplitData(updatedData);
-                            foreach (var workBookk in splittedData)
-                            {
+                            string folderPath = Path.Combine(inputDirectoryPath, "SplittedFiles");
+                            Directory.CreateDirectory(folderPath);
 
-                                string firstValue = workBookk[0][0];
+                            // Modify the file name using the first value
+                            string outputFile = $"{firstValue}_Output_{currentDate}.xlsx";
 
-                                string folderPath = Path.Combine(inputDirectoryPath, "SplittedFiles");
-                                Directory.CreateDirectory(folderPath);
+                            // Full path including the folder
+                            string fullOutputPath = Path.Combine(folderPath, outputFile);
 
-                                // Modify the file name using the first value
-                                string outputFile = $"{firstValue}_Output_{currentDate}.xlsx";
-
-                                // Full path including the folder
-                                string fullOutputPath = Path.Combine(folderPath, outputFile);
-
-                                label_operationStatus.Text = $" Creating {firstValue}.xlsx";
-                                WriteData(workBookk, fullOutputPath, excelApp, templateFilePath);
-                            }
-
-                            MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-
+                            label_operationStatus.Text = $" Creating {firstValue}.xlsx";
+                            WriteData(workBookk, fullOutputPath, excelApp, templateFilePath);
                         }
+
+                        MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+
+                    }
 
 
                 }
@@ -1156,7 +1170,7 @@ namespace ExcelHierarchyConversion_InterOp
         {
             OpenFileDialog openFileDialog12 = new OpenFileDialog();
             openFileDialog12.ShowDialog();
-            txtBox_inputPathMaximo.Text=openFileDialog12.FileName;
+            txtBox_inputPathMaximo.Text = openFileDialog12.FileName;
         }
     }
 }

@@ -21,6 +21,9 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> ReminderWindowUnit { get; set; } // X [24]
         public List<string> ResponsibleDepartment { get; set; } // Y [25]
         public List<string> Round { get; set; } // Z[26]
+        public List<string> Reminder { get; set; }
+        public List<string> Window { get; set; }
+        public List<string> SchedulingType { get; set; }
 
 
         public JobSheetData()
@@ -36,6 +39,10 @@ namespace ExcelHierarchyConversion_InterOp
             ResponsibleDepartment = new List<string>();
             Round = new List<string>();
             ReminderWindowUnit = new List<string>();
+            Reminder = new List<string>();
+            Window = new List<string>();
+            SchedulingType = new List<string>();
+
 
         }
 
@@ -94,6 +101,79 @@ namespace ExcelHierarchyConversion_InterOp
                         }
 
                     }
+                    for (int j = 0; j < singleRow.Interval.Count; j++)
+                    {
+                        string unit = singleRow.CounterType[j];
+
+                        if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 4)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 1)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
+
+                            singleRow.SchedulingType.Add("Scheduled");
+
+                        }
+
+                        else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 30)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "HR", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 720)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+
+                        }
+
+                    }
+
+
 
                     rows.Add(singleRow);
 
@@ -108,3 +188,4 @@ namespace ExcelHierarchyConversion_InterOp
 
     }
 }
+

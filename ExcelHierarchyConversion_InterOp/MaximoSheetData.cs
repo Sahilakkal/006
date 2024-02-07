@@ -13,7 +13,7 @@ namespace ExcelHierarchyConversion_InterOp
 
         public string AssetNumber { get; set; }
         public List<string> Interval { get; set; } //  // Maps with Frequency
-        public List<string> Counter { get; set; } //  // Maps with Frequency Duration
+        public List<string> CounterType { get; set; } //  // Maps with Frequency Duration
         public List<string> LastDoneDate { get; set; } // Maps with Last Done Date
         public List<string> LastDoneValue { get; set; } // Maps with At reading
         public List<string> MaximoJobPlanNumber { get; set; }    // Maps With JP Number [insert rows] 
@@ -28,7 +28,7 @@ namespace ExcelHierarchyConversion_InterOp
         {
             AssetNumber = "";
             Interval = new List<string>();
-            Counter = new List<string>();
+            CounterType = new List<string>();
             LastDoneDate = new List<string>();
             LastDoneValue = new List<string>();
             MaximoJobPlanNumber = new List<string>();
@@ -65,6 +65,7 @@ namespace ExcelHierarchyConversion_InterOp
                     string jobTaskDesc = "";
                     string mergedData = "";
                     int jpNumberCount = 0;
+                    string pmDescription ="";
 
                     MaximoSheetData singleRow = new MaximoSheetData();
 
@@ -72,10 +73,11 @@ namespace ExcelHierarchyConversion_InterOp
                     singleRow.MaximoJobPlanNumber.Add(Convert.ToString(data[i, 7]));  //Jp number
 
                     singleRow.Interval.Add(Convert.ToString(data[i, 16])); //Frequency
-                    singleRow.Counter.Add(Convert.ToString(data[i, 17]));// Frequency Duration 
+                    singleRow.CounterType.Add(Convert.ToString(data[i, 17]));// Frequency Duration 
                     singleRow.LastDoneDate.Add(Convert.ToString(data[i, 18]));// LastDoneDte 
                     singleRow.LastDoneValue.Add(Convert.ToString(data[i, 19]));// At reading 
-                    singleRow.MaximoPMDetails.Add(Convert.ToString(data[i, 2])); // PM description
+                    singleRow.MaximoPMDetails.Add(Convert.ToString(data[i, 2]));
+                    pmDescription = Convert.ToString(data[i, 2]);// PM description
 
                     jobTaskNumber = Convert.ToString(data[i, 8]);  //10-20 like 
                     jobTaskDesc = Convert.ToString(data[i, 9]);   // Job task Desc
@@ -92,11 +94,11 @@ namespace ExcelHierarchyConversion_InterOp
                         {
                             if (singleRow.MaximoJobPlanNumber[jpNumberCount] != Convert.ToString(data[temp + 1, 7]))
                             {
-
+                                
 
                                 singleRow.MaximoJobPlanNumber.Add(Convert.ToString(data[temp + 1, 7]));  // thena add Jp number
                                 singleRow.Interval.Add(Convert.ToString(data[temp + 1, 16])); //Frequency
-                                singleRow.Counter.Add(Convert.ToString(data[temp + 1, 17]));// Frequency Duration 
+                                singleRow.CounterType.Add(Convert.ToString(data[temp + 1, 17]));// Frequency Duration 
                                 singleRow.LastDoneDate.Add(Convert.ToString(data[temp + 1, 18]));// LastDoneDte 
                                 singleRow.LastDoneValue.Add(Convert.ToString(data[temp + 1, 19]));// At reading 
                                 singleRow.MaximoPMDetails.Add(Convert.ToString(data[temp + 1, 2])); // PM description
@@ -123,45 +125,102 @@ namespace ExcelHierarchyConversion_InterOp
                         }
 
 
-                        //----------------------Handling ReminderWindow and schedulign type ------------------------\\
+                    }
 
-                        /*for (int i = 0; i < singleRow.Interval.Count, i++)
+
+                    //----------------------Handling ReminderWindow and schedulign type ------------------------\\
+
+                    for (int j = 0; j < singleRow.Interval.Count; j++)
+                    {
+                        string unit = singleRow.CounterType[j];
+
+                        if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 4)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 1)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
+
+                            singleRow.SchedulingType.Add("Scheduled");
+
+                        }
+
+                        else if (string.Equals(unit, "DAYS", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 30)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+                        }
+
+                        else if (string.Equals(unit, "HR", StringComparison.OrdinalIgnoreCase))
+                        {
+                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
+                            if (Convert.ToInt32(singleRow.Interval[j]) <= 720)
+                            {
+                                singleRow.SchedulingType.Add("Fixed");
+                            }
+                            else
+                            {
+                                singleRow.SchedulingType.Add("Scheduled");
+                            }
+
+                        }
+                        if (pmDescription.StartsWith(" ENGR"))
+                        {
+                            singleRow.ResponsibleDepartment.Add("Engine");
+                        }
+                        else if (pmDescription.StartsWith(" DECK"))
                         {
 
+                            singleRow.ResponsibleDepartment.Add("Deck");
 
-                            string unit = rows[i].CounterType;
+                        }
+                        else if (pmDescription.StartsWith(" ELEC"))
+                        {
+                            singleRow.ResponsibleDepartment.Add("Electrical");
 
-                            if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
-                            {
-                                rows[i].Reminder = Math.Round(0.07 * interval * 7);
-                                rows[i].Window = Math.Round(0.1 * interval * 7);
-                            }
-
-                            else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
-                            {
-                                rows[i].Reminder = Math.Round(0.07 * interval * 30);
-                                rows[i].Window = Math.Round(0.1 * interval * 30);
-                            }
-
-                            else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
-                            {
-                                rows[i].Reminder = Math.Round(0.07 * interval * 365);
-                                rows[i].Window = Math.Round(0.1 * interval * 365);
-                            }
-
-                            else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
-                            {
-                                rows[i].Reminder = Math.Round(0.07 * interval);
-                                rows[i].Window = Math.Round(0.1 * interval);
-                            }
-
-                            else if (string.Equals(unit, "Hours", StringComparison.OrdinalIgnoreCase))
-                            {
-                                rows[i].Reminder = Math.Round(0.07 * interval);
-                                rows[i].Window = Math.Round(0.1 * interval);
-                            }
-                        }*/
+                        }
+                        else
+                        {
+                            singleRow.ResponsibleDepartment.Add("");
+                        }
                     }
+
+
                     rows.Add(singleRow);
                 }
             }
