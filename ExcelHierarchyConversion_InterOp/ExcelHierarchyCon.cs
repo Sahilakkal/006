@@ -865,38 +865,11 @@ namespace ExcelHierarchyConversion_InterOp
         /// <param name="outputData">List of lists containing data to be split based on keyword "Group level 2"</param>
         /// <returns>returns a list of lists of lists, where each inner list represents a group of rows that share the same splitKeyword</returns>
         /// 
-        public List<List<List<string>>> SplitData(List<List<string>> outputData)
-        {
-            string splitKeyword = "Group Level 2";
-            List<List<List<string>>> result = new List<List<List<string>>>();
-            List<List<string>> currentSplit = new List<List<string>>();
-
-            foreach (var row in outputData)
-            {
-                if (row.Count > 0 && row[4] == splitKeyword)
-                {
-                    if (currentSplit.Any())
-                    {
-                        result.Add(new List<List<string>>(currentSplit));
-                        currentSplit.Clear();
-                    }
-                }
-
-                currentSplit.Add(new List<string>(row));
-            }
-
-            // Add the last split if there are any remaining rows
-            if (currentSplit.Any())
-            {
-                result.Add(new List<List<string>>(currentSplit));
-            }
-
-            return result;
-        }
 
 
 
-        private void convertButton_Click(object sender, EventArgs e)
+
+        private async void convertButton_Click(object sender, EventArgs e)
         {
 
             if (string.IsNullOrEmpty(inputPathTextBox.Text) || string.IsNullOrEmpty(outputPathTextBox.Text))
@@ -959,7 +932,7 @@ namespace ExcelHierarchyConversion_InterOp
                     List<List<string>> storedData;                     //------------for storing Data Present in Input sheet------------------//
                     List<List<string>> verificationData;               //------------for storing Data Present in Verification sheet------------------//
                     List<List<string>> updatedData;                    //------------Transforming the stored Data present In input sheet according to given format------------------//
-                    List<List<List<string>>> splittedData;             //------------for storing Data for creating multiple Workbooks of output sheet------------------//
+                    List<List<OutputSheetData>> splittedData;             //------------for storing Data for creating multiple Workbooks of output sheet------------------//
 
 
 
@@ -1002,12 +975,12 @@ namespace ExcelHierarchyConversion_InterOp
                     WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
                     progressBar1.Value = 30;
 
-                    obj_OutputSheetData.WriteDataInOutput(totalData, worksheeeeet);
-                    worksheeeeet.SaveAs($"{Path.Combine(outputPathTextBox.Text, "1213.xlsx")}");
+                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet);
+                    outworkbook.SaveAs(Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}"));
                     label_operationStatus.Text = "Writing In output sheet";
                     //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
 
-                    
+
                     DateTime endTime = DateTime.Now;
                     TimeSpan duration = endTime - startTime;
                     string formattedTime = $"{(int)duration.TotalMinutes} minutes {duration.Seconds} seconds";
@@ -1027,11 +1000,12 @@ namespace ExcelHierarchyConversion_InterOp
                         label_operationStatus.Text = "Splitting Files";
                         MessageBox.Show("Splitting Files.........", "It may take while", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                        splittedData = SplitData(updatedData);
-                        foreach (var workBookk in splittedData)
+                        splittedData = obj_OutputSheetData.SplitData(totalData);
+                        foreach (List<OutputSheetData> oneSheet in splittedData)
                         {
+                            OutputSheetData firstObject = oneSheet[0];
 
-                            string firstValue = workBookk[0][0];
+                            string firstValue = firstObject.CodeInOutput;
 
                             string folderPath = Path.Combine(inputDirectoryPath, "SplittedFiles");
                             Directory.CreateDirectory(folderPath);
@@ -1043,7 +1017,8 @@ namespace ExcelHierarchyConversion_InterOp
                             string fullOutputPath = Path.Combine(folderPath, outputFile);
 
                             label_operationStatus.Text = $" Creating {firstValue}.xlsx";
-                            WriteData(workBookk, fullOutputPath, excelApp, templateFilePath);
+                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheeeeet);
+                            outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
                         MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
@@ -1069,8 +1044,8 @@ namespace ExcelHierarchyConversion_InterOp
 
                 finally
                 {
-
-                    ReleaseResources();
+                    MessageBox.Show("hanji vevere");
+                  //  ReleaseResources();
 
                 }
                 progressBar1.Value = 100;

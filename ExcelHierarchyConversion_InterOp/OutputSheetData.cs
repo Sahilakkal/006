@@ -2,6 +2,7 @@
 using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -18,6 +19,7 @@ namespace ExcelHierarchyConversion_InterOp
 {
     internal class OutputSheetData
     {
+        public static List<int> Rows = new List<int>();
         public string CodeInOutput { get; set; } // A [1]
         public string Path { get; set; } // B [2]
         public string Name { get; set; } // C [3]
@@ -44,6 +46,7 @@ namespace ExcelHierarchyConversion_InterOp
         public string MaximoEqDescription { get; set; } //  P [16]
         public string ColorYellow { get; set; }
         public string ColorGreen { get; set; }
+        public int RowsToBeAdd { get; set; }
         public JobSheetData dataFromJobSheet;
         public MaximoSheetData dataFromMaximoSheet;
 
@@ -63,6 +66,7 @@ namespace ExcelHierarchyConversion_InterOp
             Model = string.Empty;
             SerialNo = string.Empty;
             MaximoEq = string.Empty;
+            RowsToBeAdd = 0;
             MaximoEqDescription = string.Empty;
             dataFromJobSheet = new JobSheetData();
             dataFromMaximoSheet = new MaximoSheetData();
@@ -132,17 +136,9 @@ namespace ExcelHierarchyConversion_InterOp
 
         }
 
-        public void WriteDataInOutput(List<OutputSheetData> outputSheetData, Worksheet worksheet)
+        public void WriteDataInOutputAsync(List<OutputSheetData> outputSheetData, Worksheet worksheet)
         {
-
-
-            int startRow = 10;
             int numRows = outputSheetData.Count;
-            int numColumns = 18;
-
-            /*  Range dataRange = worksheet.Range[worksheet.Cells[startRow, 1], worksheet.Cells[startRow + numRows - 1, numColumns]];
-
-              dataRange.NumberFormat = "@";*/
 
             System.Data.DataTable dataTable = new System.Data.DataTable();
             DataRow dataRow;
@@ -157,19 +153,19 @@ namespace ExcelHierarchyConversion_InterOp
             }
 
             for (int i = 0; i < numRows; i++)
+
             {
+                int rowsAdded = 0;
                 OutputSheetData rowData = outputSheetData[i];
                 int countMaximo = 0;
                 int countJob = 0;
                 dataRow = dataTable.Rows.Add();
                 AddStaticColumns(i, rowData, ref dataRow);
 
-                int temp = 0;
                 while (countJob != rowData.dataFromJobSheet.JobCode.Count)
                 {
                     if (countJob == 0)
                     {
-                        MessageBox.Show("sd");
                         dataRow[19] = rowData.dataFromJobSheet.JobCode[countJob];
                         dataRow[20] = rowData.dataFromJobSheet.JobName[countJob];
 
@@ -186,10 +182,19 @@ namespace ExcelHierarchyConversion_InterOp
                         }
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
+
+                        dataRow[35] = rowData.MakerColor;
+                        dataRow[36] = rowData.ModelColor;
+                        dataRow[37] = rowData.SerialColor;
+                        dataRow[38] = rowData.MaximoEqColor;
+                        dataRow[39] = rowData.ColorGreen;
+                        dataRow[40] = rowData.ColorYellow;
+                        countMaximo++;
                     }
                     else
                     {
                         dataRow = dataTable.Rows.Add();
+                        rowsAdded++;
                         AddStaticColumns(i, rowData, ref dataRow);
                         dataRow[19] = rowData.dataFromJobSheet.JobCode[countJob];
                         dataRow[20] = rowData.dataFromJobSheet.JobName[countJob];
@@ -206,6 +211,14 @@ namespace ExcelHierarchyConversion_InterOp
                         }
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
+
+                        dataRow[35] = rowData.MakerColor;
+                        dataRow[36] = rowData.ModelColor;
+                        dataRow[37] = rowData.SerialColor;
+                        dataRow[38] = rowData.MaximoEqColor;
+                        dataRow[39] = rowData.ColorGreen;
+                        dataRow[40] = rowData.ColorYellow;
+                        countMaximo++;
                     }
 
                     countJob++;
@@ -213,13 +226,14 @@ namespace ExcelHierarchyConversion_InterOp
                 while (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count)
                 {
                     dataRow = dataTable.Rows.Add();
+                    rowsAdded++;
                     AddStaticColumns(i, rowData, ref dataRow);
                     dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
                     dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
                     dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
                     dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
                     dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
-                    //  dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
+                    dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
                     dataRow[21] = MakeJobdescription(rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo]); // job Descriptions
                     dataRow[20] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];  // Job Name
                     dataRow[22] = rowData.dataFromMaximoSheet.Interval[countMaximo];
@@ -230,16 +244,31 @@ namespace ExcelHierarchyConversion_InterOp
                     dataRow[23] = rowData.dataFromMaximoSheet.CounterType[countMaximo];
                     dataRow[35] = "Fleet Maintenance System";
 
+                    dataRow[35] = rowData.MakerColor;
+                    dataRow[36] = rowData.ModelColor;
+                    dataRow[37] = rowData.SerialColor;
+                    dataRow[38] = rowData.MaximoEqColor;
+                    dataRow[39] = rowData.ColorGreen;
+                    dataRow[40] = rowData.ColorYellow;
+                    countMaximo++;
+
                     countMaximo++;
                 }
 
 
+
+                Rows.Add(rowsAdded);
+
+
+
             }
+
 
             int rows = dataTable.Rows.Count;
             int cols = dataTable.Columns.Count;
 
             object[,] array2D = new Object[rows, cols];
+
 
             if (true)
             {
@@ -252,6 +281,8 @@ namespace ExcelHierarchyConversion_InterOp
                     }
                 }
             }
+
+
 
             Range outputRange = worksheet.Range[$"A2:AM{rows}"];
             outputRange.Value = array2D;
@@ -297,6 +328,44 @@ namespace ExcelHierarchyConversion_InterOp
             dataRow[15] = rowData.MaximoEqDescription;
 
 
+        }
+
+        public List<List<OutputSheetData>> SplitData(List<OutputSheetData> outputData)
+        {
+            string splitKeyword = "Group Level 2";
+            string codeNo = "";
+            List<List<OutputSheetData>> result = new List<List<OutputSheetData>>();
+            List<OutputSheetData> currentSplit = new List<OutputSheetData>();
+
+            int count = 0;
+
+            foreach (OutputSheetData row in outputData)
+            {
+                if (count == 0)
+                {
+                    codeNo = row.CodeInOutput;
+                }
+
+                if (row.FunctionType == splitKeyword && row.CodeInOutput != codeNo)
+                {
+                    if (currentSplit.Any())
+                    {
+                        result.Add(new List<OutputSheetData>(currentSplit));
+                        currentSplit.Clear();
+                    }
+                }
+
+                currentSplit.Add(row);
+                count++;
+            }
+
+            // Add the last split if there are any remaining rows
+            if (currentSplit.Any())
+            {
+                result.Add(new List<OutputSheetData>(currentSplit));
+            }
+
+            return result;
         }
 
     }
