@@ -975,8 +975,8 @@ namespace ExcelHierarchyConversion_InterOp
                     WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
                     progressBar1.Value = 30;
 
-                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet);
-                    outworkbook.SaveAs(Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}"));
+                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet,outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"));
+                   // outworkbook.SaveAs();
                     label_operationStatus.Text = "Writing In output sheet";
                     //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
 
@@ -991,7 +991,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                     if (!CheckBox_splitFiles.Checked)
                     {
-                        progressBar1.Value = 100;
+                        
                     }    // if split files check box is checked then no need to further increase the vakue of progressBar
                     progressBar1.Value = 70;
 
@@ -1017,11 +1017,12 @@ namespace ExcelHierarchyConversion_InterOp
                             string fullOutputPath = Path.Combine(folderPath, outputFile);
 
                             label_operationStatus.Text = $" Creating {firstValue}.xlsx";
-                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheeeeet);
+                         //   obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheeeeet);
                             outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
                         MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                      
 
                     }
 
@@ -1040,19 +1041,19 @@ namespace ExcelHierarchyConversion_InterOp
                         MessageBox.Show("An unexpected COMException occurred.");
                         // Set isExcelRunning to false, as there is an issue with Excel
                     }
+                    ReleaseResources();
                 }
-
-                finally
+                catch(Exception ex)
                 {
-                    MessageBox.Show("hanji vevere");
-                  //  ReleaseResources();
-
+                    MessageBox.Show(ex.Message);
+                    ReleaseResources();
                 }
-                progressBar1.Value = 100;
+                
             }
         }
-        private void ReleaseResources()
+        public static void ReleaseResources()
         {
+           
             List<int> excelPID = new List<int>();
 
             // Get all processes

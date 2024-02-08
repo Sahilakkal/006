@@ -19,7 +19,6 @@ namespace ExcelHierarchyConversion_InterOp
 {
     internal class OutputSheetData
     {
-        public static List<int> Rows = new List<int>();
         public string CodeInOutput { get; set; } // A [1]
         public string Path { get; set; } // B [2]
         public string Name { get; set; } // C [3]
@@ -96,10 +95,7 @@ namespace ExcelHierarchyConversion_InterOp
                 singleRow.SerialNo = row[13];
                 singleRow.MaximoEq = row[14];
                 singleRow.MaximoEqDescription = row[15];
-                singleRow.MaximoEqDescription = row[15];
-                singleRow.MaximoEqDescription = row[15];
-                singleRow.MaximoEqDescription = row[15];
-                singleRow.MaximoEqDescription = row[15];
+
                 singleRow.MakerColor = row[16];
                 singleRow.ModelColor = row[17];
                 singleRow.SerialColor = row[18];
@@ -136,19 +132,20 @@ namespace ExcelHierarchyConversion_InterOp
 
         }
 
-        public void WriteDataInOutputAsync(List<OutputSheetData> outputSheetData, Worksheet worksheet)
+        public async void WriteDataInOutputAsync(List<OutputSheetData> outputSheetData, Worksheet worksheet,Workbook workbook,string path)
         {
             int numRows = outputSheetData.Count;
 
             System.Data.DataTable dataTable = new System.Data.DataTable();
             DataRow dataRow;
-            string data = "Code\tPath\tName\tSequence No\tFunction Type\tCriticality\tLocation\tComponent Type Code\tComponent Type\tComponent Class\tFunction Status\tMaker\tModel\tSerial No.\tMaximo Equipment\tMaximo Equipment Description\tMaximo PM Details\tMaximo Job Plan Number\tMaximo Job Plan Task Number And Details\tJob Code\tJob Name\tJob Descriptions\tInterval\tCounter Type\tJob Category\tJob Type\tReminder\tWindow\tReminder / Window Unit\tResponsible Department\tRound\tScheduling Type\tLast Done Date\tLast Done Value\tLast Done Life\tJob Origin\tCriticalitiiy\tJob only linked to Function\tApproved By Boskalis";
+            string data = "Code\tPath\tName\tSequence No\tFunction Type\tCriticality\tLocation\tComponent Type Code\tComponent Type\tComponent Class\tFunction Status\tMaker\tModel\tSerial No.\tMaximo Equipment\tMaximo Equipment Description\tMaximo PM Details\tMaximo Job Plan Number\tMaximo Job Plan Task Number And Details\tJob Code\tJob Name\tJob Descriptions\tInterval\tCounter Type\tJob Category\tJob Type\tReminder\tWindow\tReminder / Window Unit\tResponsible Department\tRound\tScheduling Type\tLast Done Date\tLast Done Value\tLast Done Life\tJob Origin\tCriticalitiiy\tJob only linked to Function\tApproved By Boskalis\tx\ty\tz\ta\tb\tc";
 
             // Split the data into columns based on the tab character
             string[] dataTableColumns = data.Split('\t');
-
+            MessageBox.Show(dataTableColumns.Length.ToString());
             for (int col = 0; col < dataTableColumns.Length; col++)
             {
+                
                 dataTable.Columns.Add(dataTableColumns[col]?.ToString() ?? $"Column{col}");
             }
 
@@ -183,13 +180,11 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
 
-                        dataRow[35] = rowData.MakerColor;
-                        dataRow[36] = rowData.ModelColor;
-                        dataRow[37] = rowData.SerialColor;
-                        dataRow[38] = rowData.MaximoEqColor;
-                        dataRow[39] = rowData.ColorGreen;
-                        dataRow[40] = rowData.ColorYellow;
-                        countMaximo++;
+                        dataRow[39] = rowData.MakerColor;
+                        dataRow[40] = rowData.ModelColor;
+                        dataRow[41] = rowData.SerialColor;
+                        dataRow[42] = rowData.MaximoEqColor;
+                        dataRow[43] = "True";
                     }
                     else
                     {
@@ -212,17 +207,17 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
 
-                        dataRow[35] = rowData.MakerColor;
-                        dataRow[36] = rowData.ModelColor;
-                        dataRow[37] = rowData.SerialColor;
-                        dataRow[38] = rowData.MaximoEqColor;
-                        dataRow[39] = rowData.ColorGreen;
-                        dataRow[40] = rowData.ColorYellow;
-                        countMaximo++;
+                        dataRow[39] = rowData.MakerColor;
+                        dataRow[40] = rowData.ModelColor;
+                        dataRow[41] = rowData.SerialColor;
+                        dataRow[42] = rowData.MaximoEqColor;
+                        dataRow[43] = "True";
+                       
                     }
 
                     countJob++;
                 }
+
                 while (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count)
                 {
                     dataRow = dataTable.Rows.Add();
@@ -231,35 +226,28 @@ namespace ExcelHierarchyConversion_InterOp
                     dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
                     dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
                     dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
-                    dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
-                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
-                    dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
-                    dataRow[21] = MakeJobdescription(rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo]); // job Descriptions
+                  //  dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
                     dataRow[20] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];  // Job Name
+                    dataRow[21] = MakeJobdescription(rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo]); // job Descriptions
                     dataRow[22] = rowData.dataFromMaximoSheet.Interval[countMaximo];
-                    dataRow[31] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
+                    dataRow[23] = rowData.dataFromMaximoSheet.CounterType[countMaximo];
                     dataRow[26] = rowData.dataFromMaximoSheet.Reminder[countMaximo];
                     dataRow[27] = rowData.dataFromMaximoSheet.Window[countMaximo];
                     dataRow[29] = rowData.dataFromMaximoSheet.ResponsibleDepartment[countMaximo];
-                    dataRow[23] = rowData.dataFromMaximoSheet.CounterType[countMaximo];
+                    dataRow[31] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
+                    dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
+                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
                     dataRow[35] = "Fleet Maintenance System";
 
-                    dataRow[35] = rowData.MakerColor;
-                    dataRow[36] = rowData.ModelColor;
-                    dataRow[37] = rowData.SerialColor;
-                    dataRow[38] = rowData.MaximoEqColor;
-                    dataRow[39] = rowData.ColorGreen;
-                    dataRow[40] = rowData.ColorYellow;
+                    dataRow[39] = rowData.MakerColor;
+                    dataRow[40] = rowData.ModelColor;
+                    dataRow[41] = rowData.SerialColor;
+                    dataRow[42] = rowData.MaximoEqColor;
+                    
+                    dataRow[44] = "True";
                     countMaximo++;
 
-                    countMaximo++;
                 }
-
-
-
-                Rows.Add(rowsAdded);
-
-
 
             }
 
@@ -283,11 +271,138 @@ namespace ExcelHierarchyConversion_InterOp
             }
 
 
-
             Range outputRange = worksheet.Range[$"A2:AM{rows}"];
             outputRange.Value = array2D;
+            workbook.SaveAs(path);
 
 
+            await Task.Run(() => WriteWorkBookColor(worksheet, dataTable))
+                .ContinueWith(task =>
+                {
+                    // Handle completion or errors if needed
+                    if (task.IsFaulted)
+                    {
+                        MessageBox.Show("Error: " + task.Exception?.ToString());
+                    }
+                    else
+                    {
+                        MessageBox.Show("output Coloring Done");
+                        
+                        worksheet.Columns.AutoFit();
+                        workbook.Save();
+                        ExcelHierarchyCon.ReleaseResources();
+                    }
+                    //ReleaseWriteWorkBook();
+                });
+
+        }
+      /*  dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
+                    dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
+                    dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
+                    dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
+                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
+                    dataRow[21] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
+                    dataRow[21] = MakeJobdescription(rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo]); // job Descriptions
+        dataRow[20] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];  // Job Name
+                    dataRow[22] = rowData.dataFromMaximoSheet.Interval[countMaximo];
+                    dataRow[31] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
+                    dataRow[26] = rowData.dataFromMaximoSheet.Reminder[countMaximo];
+                    dataRow[27] = rowData.dataFromMaximoSheet.Window[countMaximo];
+                    dataRow[29] = rowData.dataFromMaximoSheet.ResponsibleDepartment[countMaximo];
+                    dataRow[23] = rowData.dataFromMaximoSheet.CounterType[countMaximo];
+                    dataRow[35] = "Fleet Maintenance System";*/
+        
+        public static async Task WriteWorkBookColor(Worksheet WriteWorksheet, DataTable dataTable)
+        {
+            MessageBox.Show("Coloring is processing In background Please wait!");
+            await Task.Run(() =>
+            {
+                for (int j = 0; j < dataTable.Rows.Count; j++)
+                {
+                    if (dataTable.Rows[j][43].ToString() == "True")
+                    {
+                        WriteWorksheet.Cells[j + 2, 20].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 25].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 26].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 29].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                        WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                    }
+                    if (dataTable.Rows[j][44].ToString() == "True")
+                    {
+                        WriteWorksheet.Cells[j + 2, 17].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 18].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 19].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 22].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 32].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                        WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+                    }
+                    if (dataTable.Rows[j][39].ToString() == "Green")
+                    {
+                        WriteWorksheet.Cells[j + 2, 12].Interior.Color = XlRgbColor.rgbGreen;
+                    }
+                    else if (dataTable.Rows[j][39].ToString() == "Orange")
+                    {
+                        WriteWorksheet.Cells[j + 2, 12].Interior.Color = XlRgbColor.rgbOrange;
+                    }
+                    else if (dataTable.Rows[j][39].ToString() == "Blue")
+                    {
+                        WriteWorksheet.Cells[j + 2, 12].Interior.Color = XlRgbColor.rgbBlue;
+                    }
+                    else if (dataTable.Rows[j][39].ToString() == "Red")
+                    {
+                        WriteWorksheet.Cells[j + 2, 12].Interior.Color = XlRgbColor.rgbRed;
+                    }
+                    if (dataTable.Rows[j][40].ToString() == "Green")
+                    {
+                        WriteWorksheet.Cells[j + 2, 13].Interior.Color = XlRgbColor.rgbGreen;
+                    }
+                    else if (dataTable.Rows[j][40].ToString() == "Orange")
+                    {
+                        WriteWorksheet.Cells[j + 2, 13].Interior.Color = XlRgbColor.rgbOrange;
+                    }
+                    else if (dataTable.Rows[j][40].ToString() == "Blue")
+                    {
+                        WriteWorksheet.Cells[j + 2, 13].Interior.Color = XlRgbColor.rgbBlue;
+                    }
+                    else if (dataTable.Rows[j][40].ToString() == "Red")
+                    {
+                        WriteWorksheet.Cells[j + 2, 13].Interior.Color = XlRgbColor.rgbRed;
+                    }
+                    if (dataTable.Rows[j][41].ToString() == "Green")
+                    {
+                        WriteWorksheet.Cells[j + 2, 14].Interior.Color = XlRgbColor.rgbGreen;
+                    }
+                    else if (dataTable.Rows[j][41].ToString() == "Orange")
+                    {
+                        WriteWorksheet.Cells[j + 2, 14].Interior.Color = XlRgbColor.rgbOrange;
+                    }
+                    else if (dataTable.Rows[j][41].ToString() == "Blue")
+                    {
+                        WriteWorksheet.Cells[j + 2, 14].Interior.Color = XlRgbColor.rgbBlue;
+                    }
+                    else if (dataTable.Rows[j][41].ToString() == "Red")
+                    {
+                        WriteWorksheet.Cells[j + 2, 14].Interior.Color = XlRgbColor.rgbRed;
+                    }
+                    if (dataTable.Rows[j][42].ToString() == "Yellow")
+                    {
+                        WriteWorksheet.Cells[j + 2, 15].Interior.Color = XlRgbColor.rgbYellow;
+                    }
+                }
+
+            });
         }
 
         public string MakeJobdescription(string jobdescription)
@@ -370,4 +485,3 @@ namespace ExcelHierarchyConversion_InterOp
 
     }
 }
-
