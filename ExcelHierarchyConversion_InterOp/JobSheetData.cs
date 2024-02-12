@@ -82,8 +82,7 @@ namespace ExcelHierarchyConversion_InterOp
                     if (singleRow.CodeInJob != "")
                     {
 
-
-                        while (temp < rowCount - 1 && Convert.ToString(data[temp + 1, 1]) == singleRow.CodeInJob)
+                        while (temp < rowCount-1 && Convert.ToString(data[temp + 1, 1]) == singleRow.CodeInJob)
                         {
                             singleRow.ComponentClass.Add(Convert.ToString(data[temp + 1, 10]));
                             singleRow.JobCode.Add(Convert.ToString(data[temp + 1, 15]));
@@ -104,88 +103,91 @@ namespace ExcelHierarchyConversion_InterOp
                     for (int j = 0; j < singleRow.Interval.Count; j++)
                     {
                         string unit = singleRow.CounterType[j];
-
-                        if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
+                        if (int.TryParse(singleRow.Interval[j],out int interval))
                         {
-                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
-                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 7)).ToString());
-                            if (Convert.ToInt32(singleRow.Interval[j]) <= 4)
+
+                            if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
                             {
-                                singleRow.SchedulingType.Add("Fixed");
+                                singleRow.Reminder.Add((Math.Round(0.07 * interval * 7)).ToString());
+                                singleRow.Window.Add((Math.Round(0.1 * interval * 7)).ToString());
+                                if (interval <= 4)
+                                {
+                                    singleRow.SchedulingType.Add("Fixed");
+                                }
+                                else
+                                {
+                                    singleRow.SchedulingType.Add("Scheduled");
+                                }
                             }
-                            else
+
+                            else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
                             {
+                                singleRow.Reminder.Add((Math.Round(0.07 * interval * 30)).ToString());
+                                singleRow.Window.Add((Math.Round(0.1 * interval * 30)).ToString());
+                                if (interval <= 1)
+                                {
+                                    singleRow.SchedulingType.Add("Fixed");
+                                }
+                                else
+                                {
+                                    singleRow.SchedulingType.Add("Scheduled");
+                                }
+                            }
+
+                            else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
+                            {
+                                singleRow.Reminder.Add((Math.Round(0.07 * interval * 365)).ToString());
+                                singleRow.Window.Add((Math.Round(0.1 * interval * 365)).ToString());
+
                                 singleRow.SchedulingType.Add("Scheduled");
+
+                            }
+
+                            else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
+                            {
+                                singleRow.Reminder.Add((Math.Round(0.07 * interval)).ToString());
+                                singleRow.Window.Add((Math.Round(0.1 * interval)).ToString());
+                                if (interval <= 30)
+                                {
+                                    singleRow.SchedulingType.Add("Fixed");
+                                }
+                                else
+                                {
+                                    singleRow.SchedulingType.Add("Scheduled");
+                                }
+                            }
+
+                            else if (string.Equals(unit, "HR", StringComparison.OrdinalIgnoreCase))
+                            {
+                                singleRow.Reminder.Add((Math.Round(0.07 * interval)).ToString());
+                                singleRow.Window.Add((Math.Round(0.1 * interval)).ToString());
+                                if (interval <= 720)
+                                {
+                                    singleRow.SchedulingType.Add("Fixed");
+                                }
+                                else
+                                {
+                                    singleRow.SchedulingType.Add("Scheduled");
+                                }
+
                             }
                         }
 
-                        else if (string.Equals(unit, "Months", StringComparison.OrdinalIgnoreCase))
+                        else
                         {
-                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
-                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 30)).ToString());
-                            if (Convert.ToInt32(singleRow.Interval[j]) <= 1)
-                            {
-                                singleRow.SchedulingType.Add("Fixed");
-                            }
-                            else
-                            {
-                                singleRow.SchedulingType.Add("Scheduled");
-                            }
+                            singleRow.Reminder.Add("");
+                            singleRow.SchedulingType.Add("");
+                            singleRow.Window.Add("");
                         }
 
-                        else if (string.Equals(unit, "Years", StringComparison.OrdinalIgnoreCase))
-                        {
-                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
-                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]) * 365)).ToString());
-
-                            singleRow.SchedulingType.Add("Scheduled");
-
-                        }
-
-                        else if (string.Equals(unit, "Days", StringComparison.OrdinalIgnoreCase))
-                        {
-                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
-                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
-                            if (Convert.ToInt32(singleRow.Interval[j]) <= 30)
-                            {
-                                singleRow.SchedulingType.Add("Fixed");
-                            }
-                            else
-                            {
-                                singleRow.SchedulingType.Add("Scheduled");
-                            }
-                        }
-
-                        else if (string.Equals(unit, "HR", StringComparison.OrdinalIgnoreCase))
-                        {
-                            singleRow.Reminder.Add((Math.Round(0.07 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
-                            singleRow.Window.Add((Math.Round(0.1 * Convert.ToInt32(singleRow.Interval[j]))).ToString());
-                            if (Convert.ToInt32(singleRow.Interval[j]) <= 720)
-                            {
-                                singleRow.SchedulingType.Add("Fixed");
-                            }
-                            else
-                            {
-                                singleRow.SchedulingType.Add("Scheduled");
-                            }
-
-                        }
 
                     }
-
-
-
                     rows.Add(singleRow);
-
                 }
             }
             return rows;
 
         }
-
-
-
-
     }
 }
 

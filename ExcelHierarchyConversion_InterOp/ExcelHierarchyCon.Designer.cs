@@ -1,4 +1,6 @@
-﻿namespace ExcelHierarchyConversion_InterOp
+﻿using System.Windows.Forms;
+
+namespace ExcelHierarchyConversion_InterOp
 {
     partial class ExcelHierarchyCon
     {
@@ -42,9 +44,10 @@
             this.uploadVerificationButton = new System.Windows.Forms.Button();
             this.checkBox_LogErrors = new System.Windows.Forms.CheckBox();
             this.CheckBox_splitFiles = new System.Windows.Forms.CheckBox();
-            this.label_operationStatus = new System.Windows.Forms.Label();
             this.txtBox_inputPathMaximo = new System.Windows.Forms.TextBox();
             this.btn_UploadMaximoSheet = new System.Windows.Forms.Button();
+            this.label_operationStatus = new System.Windows.Forms.Label();
+            this.label_fixed = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // fileDialog
@@ -79,7 +82,7 @@
             // 
             this.convertButton.BackColor = System.Drawing.SystemColors.ButtonFace;
             this.convertButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.convertButton.Location = new System.Drawing.Point(15, 306);
+            this.convertButton.Location = new System.Drawing.Point(12, 275);
             this.convertButton.Name = "convertButton";
             this.convertButton.Size = new System.Drawing.Size(130, 52);
             this.convertButton.TabIndex = 4;
@@ -93,12 +96,12 @@
             this.outputPathTextBox.Location = new System.Drawing.Point(151, 185);
             this.outputPathTextBox.Multiline = true;
             this.outputPathTextBox.Name = "outputPathTextBox";
-            this.outputPathTextBox.Size = new System.Drawing.Size(342, 31);
+            this.outputPathTextBox.Size = new System.Drawing.Size(412, 31);
             this.outputPathTextBox.TabIndex = 5;
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(15, 290);
+            this.progressBar1.Location = new System.Drawing.Point(12, 259);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(130, 10);
             this.progressBar1.TabIndex = 6;
@@ -108,7 +111,7 @@
             // 
             this.exitButton.BackColor = System.Drawing.Color.Red;
             this.exitButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.exitButton.Location = new System.Drawing.Point(585, 332);
+            this.exitButton.Location = new System.Drawing.Point(571, 346);
             this.exitButton.Name = "exitButton";
             this.exitButton.Size = new System.Drawing.Size(66, 43);
             this.exitButton.TabIndex = 8;
@@ -120,7 +123,7 @@
             // 
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei UI", 15.75F, ((System.Drawing.FontStyle)(((System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic) 
                 | System.Drawing.FontStyle.Underline))), System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(43, 9);
+            this.label1.Location = new System.Drawing.Point(41, 9);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(432, 98);
             this.label1.TabIndex = 9;
@@ -133,7 +136,7 @@
             this.inputPathTextBox.Location = new System.Drawing.Point(151, 110);
             this.inputPathTextBox.Multiline = true;
             this.inputPathTextBox.Name = "inputPathTextBox";
-            this.inputPathTextBox.Size = new System.Drawing.Size(342, 31);
+            this.inputPathTextBox.Size = new System.Drawing.Size(412, 31);
             this.inputPathTextBox.TabIndex = 10;
             this.inputPathTextBox.TextChanged += new System.EventHandler(this.inputPathTextBox_TextChanged);
             // 
@@ -143,7 +146,7 @@
             this.verificationPathTextBox.Location = new System.Drawing.Point(151, 147);
             this.verificationPathTextBox.Multiline = true;
             this.verificationPathTextBox.Name = "verificationPathTextBox";
-            this.verificationPathTextBox.Size = new System.Drawing.Size(342, 32);
+            this.verificationPathTextBox.Size = new System.Drawing.Size(412, 32);
             this.verificationPathTextBox.TabIndex = 11;
             this.verificationPathTextBox.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
@@ -164,7 +167,7 @@
             this.checkBox_LogErrors.AutoSize = true;
             this.checkBox_LogErrors.BackColor = System.Drawing.Color.LightGray;
             this.checkBox_LogErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_LogErrors.Location = new System.Drawing.Point(151, 283);
+            this.checkBox_LogErrors.Location = new System.Drawing.Point(151, 259);
             this.checkBox_LogErrors.Name = "checkBox_LogErrors";
             this.checkBox_LogErrors.Size = new System.Drawing.Size(171, 17);
             this.checkBox_LogErrors.TabIndex = 13;
@@ -177,7 +180,7 @@
             this.CheckBox_splitFiles.AutoSize = true;
             this.CheckBox_splitFiles.BackColor = System.Drawing.Color.LightGray;
             this.CheckBox_splitFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CheckBox_splitFiles.Location = new System.Drawing.Point(151, 306);
+            this.CheckBox_splitFiles.Location = new System.Drawing.Point(151, 282);
             this.CheckBox_splitFiles.Name = "CheckBox_splitFiles";
             this.CheckBox_splitFiles.Size = new System.Drawing.Size(81, 17);
             this.CheckBox_splitFiles.TabIndex = 14;
@@ -185,44 +188,59 @@
             this.CheckBox_splitFiles.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.CheckBox_splitFiles.UseVisualStyleBackColor = false;
             // 
-            // label_operationStatus
-            // 
-            this.label_operationStatus.AutoSize = true;
-            this.label_operationStatus.Location = new System.Drawing.Point(12, 226);
-            this.label_operationStatus.Name = "label_operationStatus";
-            this.label_operationStatus.Size = new System.Drawing.Size(0, 13);
-            this.label_operationStatus.TabIndex = 15;
-            // 
             // txtBox_inputPathMaximo
             // 
             this.txtBox_inputPathMaximo.BackColor = System.Drawing.SystemColors.InactiveBorder;
             this.txtBox_inputPathMaximo.Location = new System.Drawing.Point(151, 223);
             this.txtBox_inputPathMaximo.Multiline = true;
             this.txtBox_inputPathMaximo.Name = "txtBox_inputPathMaximo";
-            this.txtBox_inputPathMaximo.Size = new System.Drawing.Size(342, 41);
+            this.txtBox_inputPathMaximo.Size = new System.Drawing.Size(412, 30);
             this.txtBox_inputPathMaximo.TabIndex = 16;
             // 
             // btn_UploadMaximoSheet
             // 
             this.btn_UploadMaximoSheet.BackColor = System.Drawing.Color.White;
             this.btn_UploadMaximoSheet.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_UploadMaximoSheet.Location = new System.Drawing.Point(18, 223);
+            this.btn_UploadMaximoSheet.Location = new System.Drawing.Point(15, 222);
             this.btn_UploadMaximoSheet.Name = "btn_UploadMaximoSheet";
-            this.btn_UploadMaximoSheet.Size = new System.Drawing.Size(130, 41);
+            this.btn_UploadMaximoSheet.Size = new System.Drawing.Size(130, 31);
             this.btn_UploadMaximoSheet.TabIndex = 17;
             this.btn_UploadMaximoSheet.Text = "Upload Maximo Sheet";
             this.btn_UploadMaximoSheet.UseVisualStyleBackColor = false;
             this.btn_UploadMaximoSheet.Click += new System.EventHandler(this.btn_UploadMaximoSheet_Click);
+            // 
+            // label_operationStatus
+            // 
+            this.label_operationStatus.AutoSize = true;
+            this.label_operationStatus.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_operationStatus.Location = new System.Drawing.Point(104, 361);
+            this.label_operationStatus.Name = "label_operationStatus";
+            this.label_operationStatus.Size = new System.Drawing.Size(41, 13);
+            this.label_operationStatus.TabIndex = 18;
+            this.label_operationStatus.Text = "label2";
+            this.label_operationStatus.Visible = false;
+            // 
+            // label_fixed
+            // 
+            this.label_fixed.AutoSize = true;
+            this.label_fixed.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label_fixed.Location = new System.Drawing.Point(28, 361);
+            this.label_fixed.Name = "label_fixed";
+            this.label_fixed.Size = new System.Drawing.Size(58, 13);
+            this.label_fixed.TabIndex = 19;
+            this.label_fixed.Text = "Status ->";
+            this.label_fixed.Visible = false;
             // 
             // ExcelHierarchyCon
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.LightGray;
-            this.ClientSize = new System.Drawing.Size(663, 387);
+            this.ClientSize = new System.Drawing.Size(635, 387);
+            this.Controls.Add(this.label_fixed);
+            this.Controls.Add(this.label_operationStatus);
             this.Controls.Add(this.btn_UploadMaximoSheet);
             this.Controls.Add(this.txtBox_inputPathMaximo);
-            this.Controls.Add(this.label_operationStatus);
             this.Controls.Add(this.CheckBox_splitFiles);
             this.Controls.Add(this.checkBox_LogErrors);
             this.Controls.Add(this.uploadVerificationButton);
@@ -251,15 +269,16 @@
         private System.Windows.Forms.TextBox outputPathTextBox;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button exitButton;
-        private System.Windows.Forms.Label label1;
+        private Label label1;
         private System.Windows.Forms.TextBox inputPathTextBox;
         private System.Windows.Forms.TextBox verificationPathTextBox;
         private System.Windows.Forms.Button uploadVerificationButton;
         private System.Windows.Forms.CheckBox checkBox_LogErrors;
         private System.Windows.Forms.CheckBox CheckBox_splitFiles;
-        private System.Windows.Forms.Label label_operationStatus;
         private System.Windows.Forms.TextBox txtBox_inputPathMaximo;
         private System.Windows.Forms.Button btn_UploadMaximoSheet;
+        private Label label_operationStatus;
+        private Label label_fixed;
     }
 }
 

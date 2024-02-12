@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Interop.Excel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,6 +13,7 @@ using System.Windows.Forms;
 using App = Microsoft.Office.Interop.Excel.Application;
 using Excel = Microsoft.Office.Interop.Excel;
 using Font = System.Drawing.Font;
+using Label = System.Windows.Forms.Label;
 using SysApp = System.Windows.Forms.Application;
 
 namespace ExcelHierarchyConversion_InterOp
@@ -28,6 +28,7 @@ namespace ExcelHierarchyConversion_InterOp
         private Worksheet inputWorksheet;
         private Worksheet verificationWorksheet;
         private Worksheet outputWorksheet;
+        public static Dictionary<string, bool> enabledAddIns = new Dictionary<string, bool>();
         bool isExcelRunning = true;
 
         public ExcelHierarchyCon()
@@ -35,6 +36,37 @@ namespace ExcelHierarchyConversion_InterOp
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
+            excelApp = new App();
+            excelApp.Visible = false;
+            try
+            {
+                // Get the Add-Ins collection
+                AddIns addIns = excelApp.AddIns;
+
+                // Loop through each Add-In
+                foreach (AddIn addIn in addIns)
+                {
+                    // Display the name and status of the Add-In
+                    /*Console.WriteLine($"Add-In Name: {addIn.Name}");
+                    Console.WriteLine($"Add-In Status: {(addIn.Installed ? "Installed" : "Not Installed")}");*/
+
+                    // Check if the Add-In is enabled
+                    if (addIn.Installed)
+                    {
+                        // Store the enabled Add-In in the dictionary
+                        enabledAddIns.Add(addIn.Name, true);
+                        addIn.Installed = false;
+                        MessageBox.Show($"Add-In Status after disabling: {(addIn.Installed ? "Installed" : "Not Installed")}");
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+
         }
 
         private static bool IsWindowVisible(IntPtr hWnd)
@@ -869,7 +901,7 @@ namespace ExcelHierarchyConversion_InterOp
 
 
 
-        private async void convertButton_Click(object sender, EventArgs e)
+        private void convertButton_Click(object sender, EventArgs e)
         {
 
             if (string.IsNullOrEmpty(inputPathTextBox.Text) || string.IsNullOrEmpty(outputPathTextBox.Text))
@@ -889,6 +921,7 @@ namespace ExcelHierarchyConversion_InterOp
 
             else
             {
+                label_operationStatus.Visible = true;
                 label_operationStatus.Font = new Font(label_operationStatus.Font, FontStyle.Bold);
 
                 progressBar1.Value = 0;
@@ -911,14 +944,14 @@ namespace ExcelHierarchyConversion_InterOp
                 string templateFilePath = Path.Combine(SysApp.StartupPath, "Output template.xlsx");
                 string templateFilePath_JobSheet = Path.Combine(SysApp.StartupPath, "Jobs Sheet.xlsx");
                 string maximoSheetInputPath = txtBox_inputPathMaximo.Text;
-                string outputFilePath = Path.Combine(inputDirectoryPath, $"{inputFileName}_Output_{currentDate}.xlsx");
-                string verificationFileSavePath = Path.Combine(inputDirectoryPath, $"{verificationFileName}_OUTPUT_{currentDate}.xlsx");
+                string outputFilePath = Path.Combine(inputDirectoryPath, $"{inputFileName}Output{currentDate}.xlsx");
+                string verificationFileSavePath = Path.Combine(inputDirectoryPath, $"{verificationFileName}OUTPUT{currentDate}.xlsx");
 
                 try
                 {
+                    label_fixed.Visible = true;
 
                     label_operationStatus.Text = "Opening Excel Application";
-                    excelApp = new App();
                     excelApp.ScreenUpdating = false;
 
                     label_operationStatus.Text = "Opening Input File";
@@ -935,12 +968,19 @@ namespace ExcelHierarchyConversion_InterOp
                     List<List<OutputSheetData>> splittedData;             //------------for storing Data for creating multiple Workbooks of output sheet------------------//
 
 
-
+                    progressBar1.Value = 10;
+                    label_operationStatus.Text = "Reading Data from Output Sheet";
                     storedData = ReadData(inputWorksheet, inputWorkbook);   //Reading the Data
+                    progressBar1.Value = 20;
+
+                    label_operationStatus.Text = "Reading Data from Verification Sheet";
                     verificationData = ReadDataForVerification(verificationWorksheet);   //Reading the verification Data
+
+                    progressBar1.Value = 30;
+
+
                     updatedData = ProcessData(storedData, logFilePath);  //Processing the Data
                     VerifyData(ref updatedData, ref verificationData);   // verifying the data
-
 
                     //----------------------Handling the Maximo sheet Part [006] ------------------\\
                     Workbook maximoWorkbook = excelApp.Workbooks.Open(maximoSheetInputPath);
@@ -950,7 +990,10 @@ namespace ExcelHierarchyConversion_InterOp
 
                     MaximoSheetData obj_maximo = new MaximoSheetData();
 
+                    label_operationStatus.Text = "Reading Data from Maximo Sheet";
                     maximoSheetData = obj_maximo.ReadDataFromMaximoSheet(maximoWorksheet);
+
+                    progressBar1.Value = 50;
 
                     //----------------------Handling the Jobsheets Part [006] ------------------\\
 
@@ -960,10 +1003,16 @@ namespace ExcelHierarchyConversion_InterOp
                     List<JobSheetData> jobSheetData;
 
                     JobSheetData obj_Jobsheet = new JobSheetData();
+
+                    label_operationStatus.Text = "Reading Data from Job Sheet";
                     jobSheetData = obj_Jobsheet.ReadDataFromJobSheet(jobSheetWorksheet);
+
+                    progressBar1.Value = 55;
 
                     OutputSheetData obj_OutputSheetData = new OutputSheetData();
                     List<OutputSheetData> totalData;
+
+                    label_operationStatus.Text = "Mapping Data";
                     totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData);
 
                     Workbook outworkbook = excelApp.Workbooks.Open(templateFilePath);
@@ -973,56 +1022,59 @@ namespace ExcelHierarchyConversion_InterOp
 
                     label_operationStatus.Text = "Writing In verification sheet";
                     WriteDataInVerificationList(verificationData, verificationWorksheet, verificationWorkbook, verificationFileSavePath);   // Coloring the component no column in verification sheet
-                    progressBar1.Value = 30;
+                    progressBar1.Value = 65;
 
-                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet,outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"));
-                   // outworkbook.SaveAs();
-                    label_operationStatus.Text = "Writing In output sheet";
+                    label_operationStatus.Text = "Writing Data In Output Sheet";
+                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet, outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"), label_operationStatus);
+                    // outworkbook.SaveAs();
                     //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
 
 
                     DateTime endTime = DateTime.Now;
                     TimeSpan duration = endTime - startTime;
                     string formattedTime = $"{(int)duration.TotalMinutes} minutes {duration.Seconds} seconds";
-                    MessageBox.Show($"File Converted Successfully. Time taken: {formattedTime}", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                    MessageBox.Show($"File Converted Successfully. ", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
 
 
 
                     if (!CheckBox_splitFiles.Checked)
                     {
-                        
+                        progressBar1.Value = 100;
+
                     }    // if split files check box is checked then no need to further increase the vakue of progressBar
-                    progressBar1.Value = 70;
 
                     if (CheckBox_splitFiles.Checked)
                     {
+                        progressBar1.Value = 70;
                         label_operationStatus.Text = "Splitting Files";
-                        MessageBox.Show("Splitting Files.........", "It may take while", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
+                        
                         splittedData = obj_OutputSheetData.SplitData(totalData);
+                        Workbook workbookSplit = excelApp.Workbooks.Open(templateFilePath);
+                        Worksheet worksheetSplit = workbookSplit.Sheets[1];
                         foreach (List<OutputSheetData> oneSheet in splittedData)
                         {
                             OutputSheetData firstObject = oneSheet[0];
 
                             string firstValue = firstObject.CodeInOutput;
+                            label_operationStatus.Text = $" Creating {firstValue}.xlsx";
 
                             string folderPath = Path.Combine(inputDirectoryPath, "SplittedFiles");
                             Directory.CreateDirectory(folderPath);
 
                             // Modify the file name using the first value
-                            string outputFile = $"{firstValue}_Output_{currentDate}.xlsx";
+                            string outputFile = $"{firstValue}Output{currentDate}.xlsx";
 
                             // Full path including the folder
                             string fullOutputPath = Path.Combine(folderPath, outputFile);
 
-                            label_operationStatus.Text = $" Creating {firstValue}.xlsx";
-                         //   obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheeeeet);
-                            outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
+
+                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, Path.Combine(folderPath, outputFile),label_operationStatus);
+                            // outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
+                        progressBar1.Value = 100;
                         MessageBox.Show($"All Files Splitted Successfully", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-                      
 
                     }
 
@@ -1043,17 +1095,54 @@ namespace ExcelHierarchyConversion_InterOp
                     }
                     ReleaseResources();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show(ex.ToString());
+                }
+
+                finally
+                {
+                    // Enable all add-ins stored in the dictionary
+                    EnableAddIns(enabledAddIns, excelApp);
+                    label_operationStatus.Visible = false;
+                    label_fixed.Visible = false;
+                    SetVisiblityOfElements(true);
                     ReleaseResources();
                 }
-                
+
+            }
+        }
+
+        static void EnableAddIns(Dictionary<string, bool> addIns, App excelApp)
+        {
+            //excelApp.Visible = false; // Set to false to prevent Excel from being visible to the user
+
+            try
+            {
+                // Get the Add-Ins collection
+                AddIns excelAddIns = excelApp.AddIns;
+
+                // Loop through each add-in stored in the dictionary
+                foreach (var kvp in addIns)
+                {
+                    // Get the add-in by name
+                    AddIn addIn = excelAddIns[kvp.Key];
+
+                    // Enable the add-in
+                    addIn.Installed = kvp.Value;
+
+                    // Display the status of the enabled add-in
+                    MessageBox.Show($"Add-In '{addIn.Name}' has been {(kvp.Value ? "enabled" : "disabled")}");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error enabling add-ins: " + ex.Message);
             }
         }
         public static void ReleaseResources()
         {
-           
+
             List<int> excelPID = new List<int>();
 
             // Get all processes
@@ -1097,7 +1186,6 @@ namespace ExcelHierarchyConversion_InterOp
                         catch
                         {
                             MessageBox.Show("Excel File not running in Background");
-                            MessageBox.Show("Hello");
                             System.Windows.Forms.Application.Restart();
                         }
                         Console.WriteLine($"Excel process with PID {p.Id} killed.");
