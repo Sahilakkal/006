@@ -65,11 +65,12 @@ namespace ExcelHierarchyConversion_InterOp
         {
 
             List<OutputSheetData> outputSheetData = new List<OutputSheetData>();
-
+            int countRows = 2;
             foreach (List<string> row in outputData)
             {
                 OutputSheetData singleRow = new OutputSheetData();
 
+               
                 singleRow.CodeInOutput = row[0];
                 singleRow.Path = row[1];
                 singleRow.Name = row[2];
@@ -78,7 +79,7 @@ namespace ExcelHierarchyConversion_InterOp
                 singleRow.Criticality = row[5];
                 singleRow.Location = row[6];
                 singleRow.ComponentTypeCode = row[7];
-                singleRow.ComponentType = row[8];
+                singleRow.ComponentType = $"=IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows}), ISBLANK(M{countRows})), \"\", IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows})), M{countRows}, IF(ISBLANK(J{countRows}), IF(ISBLANK(L{countRows}), M{countRows}, CONCATENATE(L{countRows}, \"/\", M{countRows})), CONCATENATE(J{countRows}, IF(ISBLANK(L{countRows}), \"\", CONCATENATE(\"/\", L{countRows})), IF(ISBLANK(M{countRows}), \"\", CONCATENATE(\"/\", M{countRows}))))))"; ;
                 singleRow.ComponentClass = row[9];
                 singleRow.FunctionStatus = row[10];
                 singleRow.Maker = row[11];
@@ -90,6 +91,7 @@ namespace ExcelHierarchyConversion_InterOp
                 singleRow.ModelColor = row[17];
                 singleRow.SerialColor = row[18];
                 singleRow.MaximoEqColor = row[19];
+                countRows++;
 
                 for (int i = 0; i < jobSheetData.Count; i++)
                 {
@@ -132,22 +134,30 @@ namespace ExcelHierarchyConversion_InterOp
 
             // Split the data into columns based on the tab character
             string[] dataTableColumns = data.Split('\t');
-            label.Text = "Writing Headers";
+            if (label != null)
+            {
+                label.Text = "Writing Headers";
+            }
             for (int col = 0; col < dataTableColumns.Length; col++)
             {
                 dataTable.Columns.Add(dataTableColumns[col]?.ToString() ?? $"Column{col}");
             }
 
-            label.Text = "Merging Data From Job Sheet and Maximo Sheet To Output Sheet";
+            if (label != null)
+            {
+                label.Text = "Merging Data From Job Sheet and Maximo Sheet To Output Sheet";
+            }
             for (int i = 0; i < numRows; i++)
             {
 
-                int rowsAdded = 0;
+                int rowsAdded = 1;
                 OutputSheetData rowData = outputSheetData[i];
                 int countMaximo = 0;
                 int countJob = 0;
                 dataRow = dataTable.Rows.Add();
-                AddStaticColumns(i, rowData, ref dataRow);
+                rowsAdded++;
+                
+                AddStaticColumns(i, rowData, ref dataRow,rowsAdded);
 
                 while (countJob != rowData.dataFromJobSheet.JobCode.Count)
                 {
@@ -162,7 +172,7 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[25] = rowData.dataFromJobSheet.JobType[countJob];
                         dataRow[26] = rowData.dataFromJobSheet.Reminder[countJob];
                         dataRow[27] = rowData.dataFromJobSheet.Window[countJob];
-                        dataRow[31] = rowData.dataFromJobSheet.SchedulingType[countJob];
+                        dataRow[32] = rowData.dataFromJobSheet.SchedulingType[countJob];
 
 
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
@@ -178,7 +188,7 @@ namespace ExcelHierarchyConversion_InterOp
                     {
                         dataRow = dataTable.Rows.Add();
                         rowsAdded++;
-                        AddStaticColumns(i, rowData, ref dataRow);
+                        AddStaticColumns(i, rowData, ref dataRow, rowsAdded);
                         dataRow[19] = rowData.dataFromJobSheet.JobCode[countJob];
                         dataRow[20] = rowData.dataFromJobSheet.JobName[countJob];
                         dataRow[22] = rowData.dataFromJobSheet.Interval[countJob];
@@ -187,7 +197,7 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[25] = rowData.dataFromJobSheet.JobType[countJob];
                         dataRow[26] = rowData.dataFromJobSheet.Reminder[countJob];
                         dataRow[27] = rowData.dataFromJobSheet.Window[countJob];
-                        dataRow[31] = rowData.dataFromJobSheet.SchedulingType[countJob];
+                        dataRow[32] = rowData.dataFromJobSheet.SchedulingType[countJob];
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
 
@@ -208,7 +218,7 @@ namespace ExcelHierarchyConversion_InterOp
                     rowsAdded++;
 
 
-                    AddStaticColumns(i, rowData, ref dataRow);
+                    AddStaticColumns(i, rowData, ref dataRow, rowsAdded);
                     dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
                     dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
                     dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
@@ -219,11 +229,11 @@ namespace ExcelHierarchyConversion_InterOp
                     dataRow[26] = rowData.dataFromMaximoSheet.Reminder[countMaximo];
                     dataRow[27] = rowData.dataFromMaximoSheet.Window[countMaximo];
                     dataRow[28] = rowData.dataFromMaximoSheet.ReminderWindowUnit[countMaximo];
-                    dataRow[31] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
+                    dataRow[32] = rowData.dataFromMaximoSheet.SchedulingType[countMaximo];
                     dataRow[29] = rowData.dataFromMaximoSheet.ResponsibleDepartment[countMaximo];
-                    dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
-                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
-                    dataRow[35] = "Fleet Maintenance System";
+                    dataRow[33] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
+                    dataRow[34] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
+                    dataRow[36] = "Fleet Maintenance System";
 
                     dataRow[39] = rowData.MakerColor;
                     dataRow[40] = rowData.ModelColor;
@@ -261,25 +271,44 @@ namespace ExcelHierarchyConversion_InterOp
             outputRange.Value = array2D;
             workbook.SaveAs(path);
 
-            label.Text = "Coloring Cells";
-            WriteWorkBookColor(worksheet, dataTable, label);
+            if (label != null)
+            {
+                label.Text = "Coloring Cells";
+            }
+
+            if (label != null)
+            {
+                WriteWorkBookColor(worksheet, dataTable, label);
+            }
+
+            else
+            {
+                WriteWorkBookColor(worksheet, dataTable);
+            }
 
             worksheet.Columns.AutoFit();
-            label.Text = "Saving Output File";
+
+            if (label != null)
+            {
+                label.Text = "Saving Output File";
+            }
             workbook.Save();
 
 
 
         }
 
-        public void WriteWorkBookColor(Worksheet WriteWorksheet, DataTable dataTable, Label label)
+        public void WriteWorkBookColor(Worksheet WriteWorksheet, DataTable dataTable, [Optional] Label label)
         {
 
 
             for (int j = 0; j < dataTable.Rows.Count; j++)
             {
 
-                label.Text = $"Coloring {j + 2} row / {WriteWorksheet.UsedRange.Rows.Count}";
+                if (label != null)
+                {
+                    label.Text = $"Coloring {j + 2} row / {WriteWorksheet.UsedRange.Rows.Count}";
+                }
 
                 if (dataTable.Rows[j][43].ToString() == "True")
                 {
@@ -288,7 +317,15 @@ namespace ExcelHierarchyConversion_InterOp
                     Range r1 = WriteWorksheet.Range[s1];
 
 
+
                     r1.Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+
+                    if (dataTable.Rows[j][32].ToString() != "")
+                    {
+                        WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
+                    }
+                    WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
+                    WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
                     /* WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
                      WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
                      WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
@@ -300,21 +337,42 @@ namespace ExcelHierarchyConversion_InterOp
                 if (dataTable.Rows[j][44].ToString() == "True")
                 {
 
-                    string s2 = $"T{j + 2}:U{j + 2}" + "," + $"W{j + 2}:Z{j + 2}" + "," + $"AC{j + 2}:AD{j + 2}";
-                    WriteWorksheet.Cells[j + 2, 17].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 18].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 19].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 22].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 32].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                    WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                    string s2 = $"Q{j + 2}:S{j + 2}" + "," + $"U{j + 2}:X{j + 2}" + "," + $"AC{j + 2}:AD{j + 2}";
+
+                    Range r2 = WriteWorksheet.Range[s2];
+                    r2.Interior.Color = XlRgbColor.rgbGreen;
+                    WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
+                    WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
+
+                    if (dataTable.Rows[j][32].ToString() != "")
+                    {
+                        WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
+                    }
+                    WriteWorksheet.Cells[j + 2, 37].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
+
+                    if (dataTable.Rows[j][33].ToString() != "")
+                    {
+
+                        WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
+                    }
+
+                    if (dataTable.Rows[j][34].ToString() != "")
+                    {
+
+                        WriteWorksheet.Cells[j + 2, 35].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
+                    }
+                    /* WriteWorksheet.Cells[j + 2, 19].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 22].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 32].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
+                     WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;*/
                 }
                 if (dataTable.Rows[j][39].ToString() == "Green")
                 {
@@ -400,7 +458,7 @@ namespace ExcelHierarchyConversion_InterOp
             return jobDesc;
 
         }
-        public void AddStaticColumns(int i1, OutputSheetData rowData, ref DataRow dataRow)
+        public void AddStaticColumns(int i1, OutputSheetData rowData, ref DataRow dataRow,int countRows)
         {
 
             dataRow[0] = rowData.CodeInOutput;
@@ -411,7 +469,7 @@ namespace ExcelHierarchyConversion_InterOp
             dataRow[5] = rowData.Criticality;
             dataRow[6] = rowData.Location;
             dataRow[7] = rowData.ComponentTypeCode;
-            dataRow[8] = rowData.ComponentType;
+            dataRow[8] = $"=IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows}), ISBLANK(M{countRows})), \"\", IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows})), M{countRows}, IF(ISBLANK(J{countRows}), IF(ISBLANK(L{countRows}), M{countRows}, CONCATENATE(L{countRows}, \"/\", M{countRows})), CONCATENATE(J{countRows}, IF(ISBLANK(L{countRows}), \"\", CONCATENATE(\"/\", L{countRows})), IF(ISBLANK(M{countRows}), \"\", CONCATENATE(\"/\", M{countRows}))))))";
             dataRow[9] = rowData.ComponentClass;
             dataRow[10] = rowData.FunctionStatus;
             dataRow[11] = rowData.Maker;

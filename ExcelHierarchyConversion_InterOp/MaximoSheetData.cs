@@ -51,7 +51,10 @@ namespace ExcelHierarchyConversion_InterOp
 
             int rowCount = data.GetLength(0);
 
-            //---------------------Reading the data and storing it in a list of MaximoSheetData------------------------//
+            //
+            //
+            //
+            //--------------------Reading the data and storing it in a list of MaximoSheetData------------------------//
             List<MaximoSheetData> rows = new List<MaximoSheetData>();
 
             int chunkSize = 1000;
@@ -85,7 +88,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                     jobTaskNumber = Convert.ToString(data[i,11]);  //10-20 like 
                     jobTaskDesc = Convert.ToString(data[i, 12]);   // Job task Desc
-                    mergedData = "\n" + jobTaskNumber + " -" + jobTaskDesc;
+                    mergedData = "\n" + jobTaskNumber + jobTaskDesc;
 
                     if (temp < rowCount && singleRow.AssetNumber != Convert.ToString(data[temp + 1, 7]))
                     {
@@ -116,7 +119,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                             jobTaskNumber = Convert.ToString(data[temp + 1, 11]);  //10-20 like 
                             jobTaskDesc = Convert.ToString(data[temp + 1, 12]);   // Job task Desc
-                            mergedData = mergedData + "\n" + jobTaskNumber + " -" + jobTaskDesc;
+                            mergedData = mergedData + "\n" + jobTaskNumber + jobTaskDesc;
 
                             temp++;
                             i++;

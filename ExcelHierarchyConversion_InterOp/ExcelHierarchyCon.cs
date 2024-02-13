@@ -1,4 +1,6 @@
-﻿using Microsoft.Office.Interop.Excel;
+﻿using Microsoft.Office.Core;
+using Microsoft.Office.Interop.Excel;
+using Microsoft.Vbe.Interop;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -40,23 +42,24 @@ namespace ExcelHierarchyConversion_InterOp
             excelApp.Visible = false;
             try
             {
-                // Get the Add-Ins collection
-                AddIns addIns = excelApp.AddIns;
-
-                // Loop through each Add-In
-                foreach (AddIn addIn in addIns)
+                // Get the Add
+                //
+                //
+                //
+                // Ins collection
+                COMAddIns comAddIns = excelApp.COMAddIns;
+                //MessageBox.Show(comAddIns.Count.ToString());
+                // Loop through each COM Add-In
+                foreach (COMAddIn comAddIn in comAddIns)
                 {
-                    // Display the name and status of the Add-In
-                    /*Console.WriteLine($"Add-In Name: {addIn.Name}");
-                    Console.WriteLine($"Add-In Status: {(addIn.Installed ? "Installed" : "Not Installed")}");*/
-
-                    // Check if the Add-In is enabled
-                    if (addIn.Installed)
+                    // Display the name and status of the COM Add-In
+                   // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
+                  //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
+                    if (comAddIn.Connect)
                     {
-                        // Store the enabled Add-In in the dictionary
-                        enabledAddIns.Add(addIn.Name, true);
-                        addIn.Installed = false;
-                        MessageBox.Show($"Add-In Status after disabling: {(addIn.Installed ? "Installed" : "Not Installed")}");
+                        enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
+                        comAddIn.Connect = false;
+                       // MessageBox.Show($"disabled ,{comAddIn.Description}");
                     }
                 }
 
@@ -776,9 +779,6 @@ namespace ExcelHierarchyConversion_InterOp
 
                 if (!isBlank)
                 {
-                    updatedItem[8] = $"=IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows}), ISBLANK(M{countRows})), \"\", IF(AND(ISBLANK(J{countRows}), ISBLANK(L{countRows})), M{countRows}, IF(ISBLANK(J{countRows}), IF(ISBLANK(L{countRows}), M{countRows}, CONCATENATE(L{countRows}, \"/\", M{countRows})), CONCATENATE(J{countRows}, IF(ISBLANK(L{countRows}), \"\", CONCATENATE(\"/\", L{countRows})), IF(ISBLANK(M{countRows}), \"\", CONCATENATE(\"/\", M{countRows}))))))";
-
-
                     updatedData.Add(updatedItem);
                     countRows++;
 
@@ -1048,8 +1048,9 @@ namespace ExcelHierarchyConversion_InterOp
                     {
                         progressBar1.Value = 70;
                         label_operationStatus.Text = "Splitting Files";
-                        
+
                         splittedData = obj_OutputSheetData.SplitData(totalData);
+
                         Workbook workbookSplit = excelApp.Workbooks.Open(templateFilePath);
                         Worksheet worksheetSplit = workbookSplit.Sheets[1];
                         foreach (List<OutputSheetData> oneSheet in splittedData)
@@ -1057,7 +1058,6 @@ namespace ExcelHierarchyConversion_InterOp
                             OutputSheetData firstObject = oneSheet[0];
 
                             string firstValue = firstObject.CodeInOutput;
-                            label_operationStatus.Text = $" Creating {firstValue}.xlsx";
 
                             string folderPath = Path.Combine(inputDirectoryPath, "SplittedFiles");
                             Directory.CreateDirectory(folderPath);
@@ -1068,8 +1068,9 @@ namespace ExcelHierarchyConversion_InterOp
                             // Full path including the folder
                             string fullOutputPath = Path.Combine(folderPath, outputFile);
 
+                            label_operationStatus.Text = $" Creating Splitted File ~{firstValue}.xlsx";
 
-                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, Path.Combine(folderPath, outputFile),label_operationStatus);
+                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, Path.Combine(folderPath, outputFile));
                             // outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
@@ -1113,26 +1114,30 @@ namespace ExcelHierarchyConversion_InterOp
             }
         }
 
-        static void EnableAddIns(Dictionary<string, bool> addIns, App excelApp)
+        static void EnableAddIns(Dictionary<string, bool> addIns, App app)
         {
             //excelApp.Visible = false; // Set to false to prevent Excel from being visible to the user
 
             try
             {
                 // Get the Add-Ins collection
-                AddIns excelAddIns = excelApp.AddIns;
+                COMAddIns excelAddIns = app.COMAddIns;
 
-                // Loop through each add-in stored in the dictionary
+
                 foreach (var kvp in addIns)
                 {
-                    // Get the add-in by name
-                    AddIn addIn = excelAddIns[kvp.Key];
-
-                    // Enable the add-in
-                    addIn.Installed = kvp.Value;
-
-                    // Display the status of the enabled add-in
-                    MessageBox.Show($"Add-In '{addIn.Name}' has been {(kvp.Value ? "enabled" : "disabled")}");
+                    // Loop through each add-in stored in the dictionary
+                    foreach (COMAddIn comAddIn in excelAddIns)
+                    {
+                        // Check if the add-in name matches the desired key
+                        if (comAddIn.Description == kvp.Key)
+                        {
+                            // Found the desired add-in, assign it to the addIn variable
+                            comAddIn.Connect = kvp.Value;
+                            //MessageBox.Show($"Add-In '{comAddIn.Description}' has been {(kvp.Value ? "enabled" : "disabled")}");
+                            break; // Exit the loop since we found the add-in
+                        }
+                    }
                 }
             }
             catch (Exception ex)
