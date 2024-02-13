@@ -81,7 +81,7 @@ namespace ExcelHierarchyConversion_InterOp
                     singleRow.ReminderWindowUnit.Add(Convert.ToString(data[i, 24]));
                     singleRow.ResponsibleDepartment.Add(Convert.ToString(data[i, 25]));
                     singleRow.Round.Add(Convert.ToString(data[i, 26]));
-                    singleRow.Round.Add((data[i, 32]??"").ToString());
+                    singleRow.JobOrigin.Add((data[i, 32]??"").ToString());
 
                     if (singleRow.CodeInJob != "")
                     {
@@ -98,7 +98,7 @@ namespace ExcelHierarchyConversion_InterOp
                             singleRow.ReminderWindowUnit.Add(Convert.ToString(data[temp + 1, 24]));
                             singleRow.ResponsibleDepartment.Add(Convert.ToString(data[temp + 1, 25]));
                             singleRow.Round.Add(Convert.ToString(data[temp + 1, 26]));
-                            singleRow.Round.Add((data[i, 32] ?? "").ToString());
+                            singleRow.JobOrigin.Add((data[i, 32] ?? "").ToString());
 
                             i++;
                             temp++;

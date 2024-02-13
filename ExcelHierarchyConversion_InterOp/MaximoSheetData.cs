@@ -88,7 +88,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                     jobTaskNumber = Convert.ToString(data[i, 9]);  //10-20 like 
                     jobTaskDesc = Convert.ToString(data[i, 10]);   // Job task Desc
-                    mergedData = "\n" + jobTaskNumber + "-" + jobTaskDesc;
+                    mergedData = "\n" + jobTaskNumber + jobTaskDesc;
 
                     if (temp < rowCount && singleRow.AssetNumber != Convert.ToString(data[temp + 1, 5]))
                     {
@@ -119,7 +119,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                             jobTaskNumber = Convert.ToString(data[temp + 1, 9]);  //10-20 like 
                             jobTaskDesc = Convert.ToString(data[temp + 1, 10]);   // Job task Desc
-                            mergedData = mergedData + "\n" + jobTaskNumber + "-" + jobTaskDesc;
+                            mergedData = mergedData + "\n" + jobTaskNumber +  jobTaskDesc;
 
                             temp++;
                             i++;
