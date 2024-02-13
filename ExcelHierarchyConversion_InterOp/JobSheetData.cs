@@ -12,6 +12,7 @@ namespace ExcelHierarchyConversion_InterOp
     {
         public string CodeInJob { get; set; }   // A [1]
         public List<string> ComponentClass { get; set; } // J [10]
+        public List<string> JobOrigin { get; set; } // [AF] 32
         public List<string> JobCode { get; set; } // O [15]
         public List<string> JobName { get; set; }  // P [16]
         public List<string> Interval { get; set; } // R [18]
@@ -44,9 +45,10 @@ namespace ExcelHierarchyConversion_InterOp
             Reminder = new List<string>();
             Window = new List<string>();
             SchedulingType = new List<string>();
+            JobOrigin = new List<string>();
         }
 
-    
+
         public List<JobSheetData> ReadDataFromJobSheet(Worksheet worksheet)
         {
             Microsoft.Office.Interop.Excel.Range usedRange = worksheet.UsedRange;
@@ -79,6 +81,7 @@ namespace ExcelHierarchyConversion_InterOp
                     singleRow.ReminderWindowUnit.Add(Convert.ToString(data[i, 24]));
                     singleRow.ResponsibleDepartment.Add(Convert.ToString(data[i, 25]));
                     singleRow.Round.Add(Convert.ToString(data[i, 26]));
+                    singleRow.Round.Add((data[i, 32]??"").ToString());
 
                     if (singleRow.CodeInJob != "")
                     {
@@ -95,10 +98,29 @@ namespace ExcelHierarchyConversion_InterOp
                             singleRow.ReminderWindowUnit.Add(Convert.ToString(data[temp + 1, 24]));
                             singleRow.ResponsibleDepartment.Add(Convert.ToString(data[temp + 1, 25]));
                             singleRow.Round.Add(Convert.ToString(data[temp + 1, 26]));
+                            singleRow.Round.Add((data[i, 32] ?? "").ToString());
 
                             i++;
                             temp++;
                         }
+
+                    }
+
+                    else
+                    {
+                        singleRow.rowNumber = i;
+                        singleRow.CodeInJob = Convert.ToString(data[i, 1]);
+                        singleRow.ComponentClass.Add(Convert.ToString(data[i, 10]));
+                        singleRow.JobCode.Add(Convert.ToString(data[i, 15]));
+                        singleRow.JobName.Add(Convert.ToString(data[i, 16]));
+                        singleRow.Interval.Add(Convert.ToString(data[i, 18]));
+                        singleRow.CounterType.Add(Convert.ToString(data[i, 19]));
+                        singleRow.JobCategory.Add(Convert.ToString(data[i, 20]));
+                        singleRow.JobType.Add(Convert.ToString(data[i, 21]));
+                        singleRow.ReminderWindowUnit.Add(Convert.ToString(data[i, 24]));
+                        singleRow.ResponsibleDepartment.Add(Convert.ToString(data[i, 25]));
+                        singleRow.Round.Add(Convert.ToString(data[i, 26]));
+                        singleRow.Round.Add((data[i, 32] ?? "").ToString());
 
                     }
                     for (int j = 0; j < singleRow.Interval.Count; j++)
