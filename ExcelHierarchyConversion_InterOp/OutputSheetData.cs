@@ -70,7 +70,7 @@ namespace ExcelHierarchyConversion_InterOp
             {
                 OutputSheetData singleRow = new OutputSheetData();
 
-               
+
                 singleRow.CodeInOutput = row[0];
                 singleRow.Path = row[1];
                 singleRow.Name = row[2];
@@ -124,7 +124,7 @@ namespace ExcelHierarchyConversion_InterOp
 
         }
 
-        public void WriteDataInOutputAsync(List<OutputSheetData> outputSheetData, Worksheet worksheet, Workbook workbook, string path, [Optional] Label label)
+        public void WriteDataInOutputAsync(List<OutputSheetData> outputSheetData, Worksheet worksheet, Workbook workbook, string path, [Optional] Label label, Worksheet JobWorksheet, Workbook jobWorkbook)
         {
             int numRows = outputSheetData.Count;
 
@@ -147,17 +147,50 @@ namespace ExcelHierarchyConversion_InterOp
             {
                 label.Text = "Merging Data From Job Sheet and Maximo Sheet To Output Sheet";
             }
+            int rowsAdded = 1;
             for (int i = 0; i < numRows; i++)
             {
 
-                int rowsAdded = 1;
                 OutputSheetData rowData = outputSheetData[i];
+
+                //-------------Handling the Job Sheet Colors --------------------\\
+
+                if (rowData.dataFromJobSheet != null && rowData.dataFromJobSheet.rowNumber >= 2 && rowData.dataFromJobSheet.JobCode.Count >= 1)
+                {
+                    int codeCountInList = rowData.dataFromJobSheet.JobCode.Count;
+                    int rowNumber = rowData.dataFromJobSheet.rowNumber;
+
+                    for (int i1 = rowNumber; i1 <= rowNumber + codeCountInList - 1; i1++)
+                    {
+                        string rangeForJob = $"A{i1} : AF{i1}";
+
+                        Range rangeForJobColor = JobWorksheet.Range[rangeForJob];
+                        rangeForJobColor.Interior.Color = XlRgbColor.rgbGreen;
+
+                    }
+
+
+
+
+                }
+
+
+
+
+
+
+
+
+
+
+
+
                 int countMaximo = 0;
                 int countJob = 0;
                 dataRow = dataTable.Rows.Add();
                 rowsAdded++;
-                
-                AddStaticColumns(i, rowData, ref dataRow,rowsAdded);
+
+                AddStaticColumns(i, rowData, ref dataRow, rowsAdded);
 
                 while (countJob != rowData.dataFromJobSheet.JobCode.Count)
                 {
@@ -173,11 +206,8 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[26] = rowData.dataFromJobSheet.Reminder[countJob];
                         dataRow[27] = rowData.dataFromJobSheet.Window[countJob];
                         dataRow[32] = rowData.dataFromJobSheet.SchedulingType[countJob];
-
-
                         dataRow[29] = rowData.dataFromJobSheet.ResponsibleDepartment[countJob];
                         dataRow[28] = rowData.dataFromJobSheet.ReminderWindowUnit[countJob];
-
                         dataRow[39] = rowData.MakerColor;
                         dataRow[40] = rowData.ModelColor;
                         dataRow[41] = rowData.SerialColor;
@@ -270,6 +300,7 @@ namespace ExcelHierarchyConversion_InterOp
             Range outputRange = worksheet.Range[$"A2:AM{rows + 1}"];
             outputRange.Value = array2D;
             workbook.SaveAs(path);
+            jobWorkbook.SaveAs("C:\\Users\\sahil\\Desktop\\avc.xlsx");
 
             if (label != null)
             {
@@ -297,6 +328,7 @@ namespace ExcelHierarchyConversion_InterOp
 
 
         }
+
 
         public void WriteWorkBookColor(Worksheet WriteWorksheet, DataTable dataTable, [Optional] Label label)
         {
@@ -326,13 +358,7 @@ namespace ExcelHierarchyConversion_InterOp
                     }
                     WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
                     WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrange;
-                    /* WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 25].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 26].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 29].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
-                     WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;*/
+
                 }
                 if (dataTable.Rows[j][44].ToString() == "True")
                 {
@@ -361,18 +387,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                         WriteWorksheet.Cells[j + 2, 35].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
                     }
-                    /* WriteWorksheet.Cells[j + 2, 19].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 21].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 22].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 23].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 24].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 32].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;
-                     WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbForestGreen;*/
+
                 }
                 if (dataTable.Rows[j][39].ToString() == "Green")
                 {
@@ -458,7 +473,7 @@ namespace ExcelHierarchyConversion_InterOp
             return jobDesc;
 
         }
-        public void AddStaticColumns(int i1, OutputSheetData rowData, ref DataRow dataRow,int countRows)
+        public void AddStaticColumns(int i1, OutputSheetData rowData, ref DataRow dataRow, int countRows)
         {
 
             dataRow[0] = rowData.CodeInOutput;
@@ -483,27 +498,43 @@ namespace ExcelHierarchyConversion_InterOp
 
         public List<List<OutputSheetData>> SplitData(List<OutputSheetData> outputData)
         {
+            List<OutputSheetData> temp = new List<OutputSheetData>();
+            List<List<OutputSheetData>> result = new List<List<OutputSheetData>>();
+            string currentSheetCode = "";
+            for (int i = 0; i < outputData.Count; i++)
+            {
+                temp.Add(outputData[i]);
+                if (outputData[i].FunctionType == "Group Level 2" && (i==0 || currentSheetCode != outputData[i].CodeInOutput ))
+                {
+                     currentSheetCode = outputData[i].CodeInOutput;
+                    result.Add(temp);
+                    temp.Clear();
+                }
+            }
+
+            return result;
+
+
+
+
+            /*
             string splitKeyword = "Group Level 2";
             string codeNo = "";
-            List<List<OutputSheetData>> result = new List<List<OutputSheetData>>();
             List<OutputSheetData> currentSplit = new List<OutputSheetData>();
 
             int count = 0;
 
             foreach (OutputSheetData row in outputData)
             {
-                if (count == 0)
-                {
+                
                     codeNo = row.CodeInOutput;
-                }
 
-                if (row.FunctionType == splitKeyword && row.CodeInOutput != codeNo)
+
+                if (row.FunctionType == splitKeyword && (row.CodeInOutput != codeNo || count==0))
                 {
-                    if (currentSplit.Any())
-                    {
+                   
                         result.Add(new List<OutputSheetData>(currentSplit));
-                        currentSplit.Clear();
-                    }
+                    
                 }
 
                 currentSplit.Add(row);
@@ -517,6 +548,7 @@ namespace ExcelHierarchyConversion_InterOp
             }
 
             return result;
+            */
         }
 
     }

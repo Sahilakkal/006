@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,6 +31,7 @@ namespace ExcelHierarchyConversion_InterOp
         private Worksheet inputWorksheet;
         private Worksheet verificationWorksheet;
         private Worksheet outputWorksheet;
+        public static bool alreadyDone = false;
         public static Dictionary<string, bool> enabledAddIns = new Dictionary<string, bool>();
         bool isExcelRunning = true;
 
@@ -39,37 +41,7 @@ namespace ExcelHierarchyConversion_InterOp
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             excelApp = new App();
-            excelApp.Visible = false;
-            try
-            {
-                // Get the Add
-                //
-                //
-                //
-                // Ins collection
-                COMAddIns comAddIns = excelApp.COMAddIns;
-                //MessageBox.Show(comAddIns.Count.ToString());
-                // Loop through each COM Add-In
-                foreach (COMAddIn comAddIn in comAddIns)
-                {
-                    // Display the name and status of the COM Add-In
-                   // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
-                  //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
-                    if (comAddIn.Connect)
-                    {
-                        enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
-                        comAddIn.Connect = false;
-                       // MessageBox.Show($"disabled ,{comAddIn.Description}");
-                    }
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error: " + ex.Message);
-            }
-
+           
         }
 
         private static bool IsWindowVisible(IntPtr hWnd)
@@ -91,6 +63,32 @@ namespace ExcelHierarchyConversion_InterOp
 
         private void uploadButton_Click(object sender, EventArgs e)
         {
+            /*if (excelApp == null)
+            {
+                excelApp = new App();
+
+            }
+
+            if(!alreadyDone)
+            {
+                // Ins collection
+                COMAddIns comAddIns = excelApp.COMAddIns;
+                //MessageBox.Show(comAddIns.Count.ToString());
+                // Loop through each COM Add-In
+                foreach (COMAddIn comAddIn in comAddIns)
+                {
+                    // Display the name and status of the COM Add-In
+                    // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
+                    //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
+                    if (comAddIn.Connect)
+                    {
+                        enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
+                        comAddIn.Connect = false;
+                        alreadyDone = true;
+                        // MessageBox.Show($"disabled ,{comAddIn.Description}");
+                    }
+                }
+            }*/
             progressBar1.Visible = false;
             fileDialog.ShowDialog();
             inputPathTextBox.Text = fileDialog.FileName;
@@ -937,6 +935,7 @@ namespace ExcelHierarchyConversion_InterOp
                 string verificationFilePath = verificationPathTextBox.Text;
 
                 string verificationFileName = Path.GetFileNameWithoutExtension(verificationFilePath);
+
                 string currentDate = dateTime.ToString("yyyyMMdd_HHmmss");
                 string inputFileName = Path.GetFileNameWithoutExtension(inputFilePath);
 
@@ -1025,7 +1024,7 @@ namespace ExcelHierarchyConversion_InterOp
                     progressBar1.Value = 65;
 
                     label_operationStatus.Text = "Writing Data In Output Sheet";
-                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet, outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"), label_operationStatus);
+                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet, outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"), label_operationStatus,jobSheetWorksheet,jobSheetWorkbook);
                     // outworkbook.SaveAs();
                     //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
 
@@ -1070,7 +1069,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                             label_operationStatus.Text = $" Creating Splitted File ~{firstValue}.xlsx";
 
-                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, Path.Combine(folderPath, outputFile));
+                          //  obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, Path.Combine(folderPath, outputFile));
                             // outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
@@ -1103,8 +1102,8 @@ namespace ExcelHierarchyConversion_InterOp
 
                 finally
                 {
+                    alreadyDone = false;
                     // Enable all add-ins stored in the dictionary
-                    EnableAddIns(enabledAddIns, excelApp);
                     label_operationStatus.Visible = false;
                     label_fixed.Visible = false;
                     SetVisiblityOfElements(true);
@@ -1114,37 +1113,6 @@ namespace ExcelHierarchyConversion_InterOp
             }
         }
 
-        static void EnableAddIns(Dictionary<string, bool> addIns, App app)
-        {
-            //excelApp.Visible = false; // Set to false to prevent Excel from being visible to the user
-
-            try
-            {
-                // Get the Add-Ins collection
-                COMAddIns excelAddIns = app.COMAddIns;
-
-
-                foreach (var kvp in addIns)
-                {
-                    // Loop through each add-in stored in the dictionary
-                    foreach (COMAddIn comAddIn in excelAddIns)
-                    {
-                        // Check if the add-in name matches the desired key
-                        if (comAddIn.Description == kvp.Key)
-                        {
-                            // Found the desired add-in, assign it to the addIn variable
-                            comAddIn.Connect = kvp.Value;
-                            //MessageBox.Show($"Add-In '{comAddIn.Description}' has been {(kvp.Value ? "enabled" : "disabled")}");
-                            break; // Exit the loop since we found the add-in
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Error enabling add-ins: " + ex.Message);
-            }
-        }
         public static void ReleaseResources()
         {
 

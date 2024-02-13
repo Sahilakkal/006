@@ -24,6 +24,8 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> Reminder { get; set; }
         public List<string> Window { get; set; }
         public List<string> SchedulingType { get; set; }
+        public int rowNumber { get; set; } = 0;
+
 
 
         public JobSheetData()
@@ -42,10 +44,9 @@ namespace ExcelHierarchyConversion_InterOp
             Reminder = new List<string>();
             Window = new List<string>();
             SchedulingType = new List<string>();
-
-
         }
 
+    
         public List<JobSheetData> ReadDataFromJobSheet(Worksheet worksheet)
         {
             Microsoft.Office.Interop.Excel.Range usedRange = worksheet.UsedRange;
@@ -66,7 +67,7 @@ namespace ExcelHierarchyConversion_InterOp
                 {
                     int temp = i;
                     JobSheetData singleRow = new JobSheetData();  // Holds data for single Row
-
+                    singleRow.rowNumber = i;
                     singleRow.CodeInJob = Convert.ToString(data[i, 1]);
                     singleRow.ComponentClass.Add(Convert.ToString(data[i, 10]));
                     singleRow.JobCode.Add(Convert.ToString(data[i, 15]));
@@ -82,7 +83,7 @@ namespace ExcelHierarchyConversion_InterOp
                     if (singleRow.CodeInJob != "")
                     {
 
-                        while (temp < rowCount-1 && Convert.ToString(data[temp + 1, 1]) == singleRow.CodeInJob)
+                        while (temp < rowCount - 1 && Convert.ToString(data[temp + 1, 1]) == singleRow.CodeInJob)
                         {
                             singleRow.ComponentClass.Add(Convert.ToString(data[temp + 1, 10]));
                             singleRow.JobCode.Add(Convert.ToString(data[temp + 1, 15]));
@@ -103,7 +104,7 @@ namespace ExcelHierarchyConversion_InterOp
                     for (int j = 0; j < singleRow.Interval.Count; j++)
                     {
                         string unit = singleRow.CounterType[j];
-                        if (int.TryParse(singleRow.Interval[j],out int interval))
+                        if (int.TryParse(singleRow.Interval[j], out int interval))
                         {
 
                             if (string.Equals(unit, "Weeks", StringComparison.OrdinalIgnoreCase))
