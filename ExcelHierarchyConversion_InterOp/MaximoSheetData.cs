@@ -23,7 +23,7 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> Reminder { get; set; }
         public List<string> Window { get; set; }
         public List<string> SchedulingType { get; set; }
-
+        public int rowNumber { get; set; } = 0;
         public List<string> ReminderWindowUnit { get; set; }
 
         public MaximoSheetData()
@@ -75,6 +75,7 @@ namespace ExcelHierarchyConversion_InterOp
                     string pmDescription = "";
 
                     MaximoSheetData singleRow = new MaximoSheetData();
+                    singleRow.rowNumber = i;
 
                     singleRow.AssetNumber = Convert.ToString(data[i, 5]);
                     singleRow.MaximoJobPlanNumber.Add(Convert.ToString(data[i, 7]));  //Jp number

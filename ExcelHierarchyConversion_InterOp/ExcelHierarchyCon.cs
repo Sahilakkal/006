@@ -33,6 +33,7 @@ namespace ExcelHierarchyConversion_InterOp
         private Worksheet outputWorksheet;
         public static bool alreadyDone = false;
         public static Dictionary<string, bool> enabledAddIns = new Dictionary<string, bool>();
+
         bool isExcelRunning = true;
 
         public ExcelHierarchyCon()
@@ -41,7 +42,7 @@ namespace ExcelHierarchyConversion_InterOp
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             excelApp = new App();
-           
+
         }
 
         private static bool IsWindowVisible(IntPtr hWnd)
@@ -137,6 +138,9 @@ namespace ExcelHierarchyConversion_InterOp
                         }
 
                     }
+
+                    string cellData1 = (data[i, 27] ?? "").ToString();
+                    rowData.Add(cellData1);  // reading Data id from input Sheet
 
                     transformedData.Add(rowData);
                 }
@@ -591,7 +595,7 @@ namespace ExcelHierarchyConversion_InterOp
             int countRows = 2;
             foreach (List<string> item in transformedData)
             {
-                List<string> updatedItem = new List<string>(new string[20]);
+                List<string> updatedItem = new List<string>(new string[21]);
                 string maximoEqDescription = "", maximoEq = "", maker = "", serialNum = "", modelType = "";
                 bool isBlank = true;
                 int count = 0;
@@ -761,6 +765,7 @@ namespace ExcelHierarchyConversion_InterOp
                 updatedItem[17] = "";  // model color
                 updatedItem[18] = "";  // serial color
                 updatedItem[19] = "";  // maximo Eq color
+                updatedItem[20] = item[16];
 
 
                 if (count > 1)
@@ -1012,7 +1017,10 @@ namespace ExcelHierarchyConversion_InterOp
                     List<OutputSheetData> totalData;
 
                     label_operationStatus.Text = "Mapping Data";
-                    totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData);
+
+                    List<EmptyCodeJobSheetData> emptyJobSheetData;
+                    emptyJobSheetData = obj_Jobsheet.EmptyReadDataFromJobSheet(jobSheetWorksheet);
+                    totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData, emptyJobSheetData);
 
                     Workbook outworkbook = excelApp.Workbooks.Open(templateFilePath);
                     Worksheet worksheeeeet = outworkbook.Sheets[1];
@@ -1024,7 +1032,7 @@ namespace ExcelHierarchyConversion_InterOp
                     progressBar1.Value = 65;
 
                     label_operationStatus.Text = "Writing Data In Output Sheet";
-                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet, outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"), label_operationStatus);
+                    obj_OutputSheetData.WriteDataInOutputAsync(totalData, worksheeeeet, outworkbook, Path.Combine(outputPathTextBox.Text, $"Output_File{inputFileName}_{currentDate}.xlsx"), label_operationStatus, maximoWorksheet, maximoWorkbook, Path.Combine((outputPathTextBox.Text), $"{Path.GetFileNameWithoutExtension(maximoSheetInputPath)}_Output_{currentDate}.xlsx"));
                     // outworkbook.SaveAs();
                     //  WriteData(updatedData, outputFilePath, excelApp, templateFilePath);                                                //Writing the Data
 
@@ -1032,8 +1040,7 @@ namespace ExcelHierarchyConversion_InterOp
                     DateTime endTime = DateTime.Now;
                     TimeSpan duration = endTime - startTime;
                     string formattedTime = $"{(int)duration.TotalMinutes} minutes {duration.Seconds} seconds";
-                    MessageBox.Show($"File Converted Successfully. ", "Thank You For using Excel hierarchy Converter", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
-
+                    label_operationStatus.Text = "File Created Successfully...";
 
 
 
@@ -1050,10 +1057,10 @@ namespace ExcelHierarchyConversion_InterOp
 
                         splittedData = obj_OutputSheetData.SplitData(totalData);
 
-                        Workbook workbookSplit = excelApp.Workbooks.Open(templateFilePath);
-                        Worksheet worksheetSplit = workbookSplit.Sheets[1];
                         foreach (List<OutputSheetData> oneSheet in splittedData)
                         {
+                            Workbook workbookSplit = excelApp.Workbooks.Open(templateFilePath);
+                            Worksheet worksheetSplit = workbookSplit.Sheets[1];
                             OutputSheetData firstObject = oneSheet[0];
 
                             string firstValue = firstObject.CodeInOutput;
@@ -1069,8 +1076,9 @@ namespace ExcelHierarchyConversion_InterOp
 
                             label_operationStatus.Text = $" Creating Splitted File ~{firstValue}.xlsx";
 
-                           obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, fullOutputPath);
-                        //   outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
+                            obj_OutputSheetData.WriteDataInOutputAsync(oneSheet, worksheetSplit, workbookSplit, fullOutputPath);
+                            workbookSplit.Close();
+                            //   outworkbook.SaveAs(Path.Combine(folderPath, outputFile));
                         }
 
                         progressBar1.Value = 100;
