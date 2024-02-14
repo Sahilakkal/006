@@ -41,7 +41,7 @@ namespace ExcelHierarchyConversion_InterOp
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            excelApp = new App();
+
 
         }
 
@@ -64,32 +64,7 @@ namespace ExcelHierarchyConversion_InterOp
 
         private void uploadButton_Click(object sender, EventArgs e)
         {
-            /*if (excelApp == null)
-            {
-                excelApp = new App();
 
-            }
-
-            if(!alreadyDone)
-            {
-                // Ins collection
-                COMAddIns comAddIns = excelApp.COMAddIns;
-                //MessageBox.Show(comAddIns.Count.ToString());
-                // Loop through each COM Add-In
-                foreach (COMAddIn comAddIn in comAddIns)
-                {
-                    // Display the name and status of the COM Add-In
-                    // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
-                    //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
-                    if (comAddIn.Connect)
-                    {
-                        enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
-                        comAddIn.Connect = false;
-                        alreadyDone = true;
-                        // MessageBox.Show($"disabled ,{comAddIn.Description}");
-                    }
-                }
-            }*/
             progressBar1.Visible = false;
             fileDialog.ShowDialog();
             inputPathTextBox.Text = fileDialog.FileName;
@@ -955,6 +930,33 @@ namespace ExcelHierarchyConversion_InterOp
                 {
                     label_fixed.Visible = true;
 
+                    excelApp = new App();
+
+
+                    if (!alreadyDone)
+                    {
+                        // Ins collection
+                        COMAddIns comAddIns = excelApp.COMAddIns;
+                        //MessageBox.Show(comAddIns.Count.ToString());
+                        // Loop through each COM Add-In
+                        foreach (COMAddIn comAddIn in comAddIns)
+                        {
+                            // Display the name and status of the COM Add-In
+                            // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
+                            //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
+                            if (comAddIn.Connect)
+                            {
+                                if (enabledAddIns.ContainsKey(comAddIn.Description))
+                                {
+                                    enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
+                                }
+                                comAddIn.Connect = false;
+                                alreadyDone = true;
+                                // MessageBox.Show($"disabled ,{comAddIn.Description}");
+                            }
+                        }
+                    }
+
                     label_operationStatus.Text = "Opening Excel Application";
                     excelApp.ScreenUpdating = false;
 
@@ -1099,25 +1101,60 @@ namespace ExcelHierarchyConversion_InterOp
                     else
                     {
                         MessageBox.Show("An unexpected COMException occurred.");
+                        MessageBox.Show(comEx.Message);
                         // Set isExcelRunning to false, as there is an issue with Excel
                     }
-                    ReleaseResources();
+                    //ReleaseResources();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.ToString());
+                    MessageBox.Show(ex.Message);
+                    //MessageBox.Show(ex.ToString());
                 }
 
                 finally
                 {
                     alreadyDone = false;
-                    // Enable all add-ins stored in the dictionary
+                    EnableAddIns(enabledAddIns, excelApp);
                     label_operationStatus.Visible = false;
                     label_fixed.Visible = false;
                     SetVisiblityOfElements(true);
                     ReleaseResources();
                 }
 
+            }
+        }
+
+        static void EnableAddIns(Dictionary<string, bool> addIns, App app)
+        {
+            //excelApp.Visible = false; // Set to false to prevent Excel from being visible to the user
+
+            try
+            {
+                // Get the Add-Ins collection
+                COMAddIns excelAddIns = app.COMAddIns;
+
+
+                foreach (var kvp in addIns)
+                {
+                    // Loop through each add-in stored in the dictionary
+                    foreach (COMAddIn comAddIn in excelAddIns)
+                    {
+                        // Check if the add-in name matches the desired key
+                        if (comAddIn.Description == kvp.Key)
+                        {
+                            // Found the desired add-in, assign it to the addIn variable
+                            comAddIn.Connect = kvp.Value;
+                          //  MessageBox.Show($"Add-In '{comAddIn.Description}' has been {(kvp.Value ? "enabled" : "disabled")}");
+                            break; // Exit the loop since we found the add-in
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error enabling add-ins: " + ex.Message);
+              //  MessageBox.Show(ex.ToString());
             }
         }
 
@@ -1177,7 +1214,7 @@ namespace ExcelHierarchyConversion_InterOp
         private void exitButton_Click(object sender, EventArgs e)
         {
             DialogResult result;
-
+            //EnableAddIns(enabledAddIns, excelApp);
             if (progressBar1.Visible)
             {
                 result = MessageBox.Show("Current Process Will be Terminated, Are you Sure you want to Exit?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);

@@ -275,10 +275,6 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[29] = rowData.EmptyCodeFromJobSheet.ResponsibleDepartment[countEmptyJob];
                         dataRow[28] = rowData.EmptyCodeFromJobSheet.ReminderWindowUnit[countEmptyJob];
 
-                        dataRow[39] = rowData.MakerColor;
-                        dataRow[40] = rowData.ModelColor;
-                        dataRow[41] = rowData.SerialColor;
-                        dataRow[42] = rowData.MaximoEqColor;
                         dataRow[43] = "True";
                     }
                     else
@@ -298,10 +294,7 @@ namespace ExcelHierarchyConversion_InterOp
                         dataRow[28] = rowData.EmptyCodeFromJobSheet.ReminderWindowUnit[countEmptyJob];
                         dataRow[29] = rowData.EmptyCodeFromJobSheet.ResponsibleDepartment[countEmptyJob];
 
-                        dataRow[39] = rowData.MakerColor;
-                        dataRow[40] = rowData.ModelColor;
-                        dataRow[41] = rowData.SerialColor;
-                        dataRow[42] = rowData.MaximoEqColor;
+
                         dataRow[43] = "True";
 
                     }
@@ -340,9 +333,6 @@ namespace ExcelHierarchyConversion_InterOp
                     dataRow[32] = rowData.dataFromMaximoSheet.LastDoneDate[countMaximo];
                     dataRow[33] = rowData.dataFromMaximoSheet.LastDoneValue[countMaximo];
                     dataRow[35] = "Fleet Maintenance System";
-
-
-
                     dataRow[44] = "True";
                     countMaximo++;
 
@@ -417,9 +407,15 @@ namespace ExcelHierarchyConversion_InterOp
 
                 if (dataTable.Rows[j][43].ToString() == "True")
                 {
-                    string s1 = $"T{j + 2}:U{j + 2}" + "," + $"W{j + 2}:Z{j + 2}" + "," + $"AC{j + 2}:AD{j + 2}";
+                    if (dataTable.Rows[j][25].ToString() != "")
+                    {
+                        string s1 = $"T{j + 2}:U{j + 2}" + "," + $"W{j + 2}:Z{j + 2}" + "," + $"AC{j + 2}:AD{j + 2}";
 
-                    Range r1 = WriteWorksheet.Range[s1];
+
+                        Range r1 = WriteWorksheet.Range[s1];
+                        r1.Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
+
+                    }
                     if (dataTable.Rows[j][21].ToString() != "")
                     {
                         WriteWorksheet.Cells[j + 2, 22].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
@@ -429,7 +425,6 @@ namespace ExcelHierarchyConversion_InterOp
                         WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
 
                     }
-                    r1.Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbYellow;
 
                     if (dataTable.Rows[j][31].ToString() != "")
                     {
@@ -439,14 +434,14 @@ namespace ExcelHierarchyConversion_InterOp
                     WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
                     WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
 
-                }  // Job Sheet
+                }  // Job Sheet Coloring 
                 if (dataTable.Rows[j][44].ToString() == "True")
                 {
 
                     string s2 = $"Q{j + 2}:S{j + 2}" + "," + $"U{j + 2}:X{j + 2}";
 
                     Range r2 = WriteWorksheet.Range[s2];
-                    r2.Interior.Color = XlRgbColor.rgbGreen;
+                    r2.Interior.Color = XlRgbColor.rgbLightGreen;
                     WriteWorksheet.Cells[j + 2, 27].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
                     WriteWorksheet.Cells[j + 2, 28].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
 
@@ -459,20 +454,20 @@ namespace ExcelHierarchyConversion_InterOp
                     if (dataTable.Rows[j][32].ToString() != "")
                     {
 
-                        WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
+                        WriteWorksheet.Cells[j + 2, 33].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbLightGreen;
                     }
 
                     if (dataTable.Rows[j][33].ToString() != "")
                     {
 
-                        WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbGreen;
+                        WriteWorksheet.Cells[j + 2, 34].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbLightGreen;
                     }
 
                     WriteWorksheet.Cells[j + 2, 36].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
                     WriteWorksheet.Cells[j + 2, 30].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
                     WriteWorksheet.Cells[j + 2, 29].Interior.Color = Microsoft.Office.Interop.Excel.XlRgbColor.rgbOrangeRed;
 
-                }
+                } // Maximo Sheet Coloring
                 if (dataTable.Rows[j][45].ToString() == "Green")
                 {
                     WriteWorksheet.Cells[j + 2, 12].Interior.Color = XlRgbColor.rgbGreen;
@@ -580,8 +575,8 @@ namespace ExcelHierarchyConversion_InterOp
             dataRow[40] = rowData.ModelColor;
             dataRow[41] = rowData.SerialColor;
             dataRow[42] = rowData.MaximoEqColor;
-
             dataRow[45] = rowData.MakerColor;// Changed
+
 
         }
 

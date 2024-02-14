@@ -80,16 +80,16 @@ namespace ExcelHierarchyConversion_InterOp
                     singleRow.AssetNumber = Convert.ToString(data[i, 5]);
                     singleRow.MaximoJobPlanNumber.Add(Convert.ToString(data[i, 7]));  //Jp number
 
-                    singleRow.Interval.Add(Convert.ToString(data[i, 17])); //Frequency
-                    singleRow.CounterType.Add(Convert.ToString(data[i, 18]));// Frequency Duration 
-                    singleRow.LastDoneDate.Add(Convert.ToString(data[i, 19]));// LastDoneDte 
-                    singleRow.LastDoneValue.Add(Convert.ToString(data[i, 20]));// At reading 
+                    singleRow.Interval.Add(Convert.ToString(data[i, 16])); //Frequency
+                    singleRow.CounterType.Add(Convert.ToString(data[i, 17]));// Frequency Duration 
+                    singleRow.LastDoneDate.Add(Convert.ToString(data[i, 18]));// LastDoneDte 
+                    singleRow.LastDoneValue.Add(Convert.ToString(data[i, 19]));// At reading 
                     singleRow.MaximoPMDetails.Add(Convert.ToString(data[i, 2]));
                     pmDescription = Convert.ToString(data[i, 2]);// PM description
 
-                    jobTaskNumber = Convert.ToString(data[i, 9]);  //10-20 like 
-                    jobTaskDesc = Convert.ToString(data[i, 10]);   // Job task Desc
-                    mergedData = "\n" + jobTaskNumber + jobTaskDesc;
+                    jobTaskNumber = Convert.ToString(data[i, 8]);  //10-20 like 
+                    jobTaskDesc = Convert.ToString(data[i, 9]);   // Job task Desc
+                    mergedData = "\n" + jobTaskNumber + "-" + jobTaskDesc;
 
                     if (temp < rowCount && singleRow.AssetNumber != Convert.ToString(data[temp + 1, 5]))
                     {
@@ -105,10 +105,10 @@ namespace ExcelHierarchyConversion_InterOp
 
 
                                 singleRow.MaximoJobPlanNumber.Add(Convert.ToString(data[temp + 1, 7]));  // thena add Jp number
-                                singleRow.Interval.Add(Convert.ToString(data[i, 17])); //Frequency
-                                singleRow.CounterType.Add(Convert.ToString(data[i, 18]));// Frequency Duration 
-                                singleRow.LastDoneDate.Add(Convert.ToString(data[i, 19]));// LastDoneDte 
-                                singleRow.LastDoneValue.Add(Convert.ToString(data[i, 20]));// At reading 
+                                singleRow.Interval.Add(Convert.ToString(data[i, 16])); //Frequency
+                                singleRow.CounterType.Add(Convert.ToString(data[i, 17]));// Frequency Duration 
+                                singleRow.LastDoneDate.Add(Convert.ToString(data[i, 18]));// LastDoneDte 
+                                singleRow.LastDoneValue.Add(Convert.ToString(data[i, 19]));// At reading 
                                 singleRow.MaximoPMDetails.Add(Convert.ToString(data[temp + 1, 2])); // PM description
                                 singleRow.MaximoJobPlanTaskNumberAndDetails.Add(mergedData);
                                 mergedData = "";
@@ -118,9 +118,9 @@ namespace ExcelHierarchyConversion_InterOp
 
 
 
-                            jobTaskNumber = Convert.ToString(data[temp + 1, 9]);  //10-20 like 
-                            jobTaskDesc = Convert.ToString(data[temp + 1, 10]);   // Job task Desc
-                            mergedData = mergedData + "\n" + jobTaskNumber +  jobTaskDesc;
+                            jobTaskNumber = Convert.ToString(data[temp + 1, 8]);  //10-20 like 
+                            jobTaskDesc = Convert.ToString(data[temp + 1, 9]);   // Job task Desc
+                            mergedData = mergedData + "\n" + jobTaskNumber + "-" + jobTaskDesc;
 
                             temp++;
                             i++;
