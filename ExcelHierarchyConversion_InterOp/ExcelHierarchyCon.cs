@@ -358,6 +358,7 @@ namespace ExcelHierarchyConversion_InterOp
                         string[] totalMaximo;
 
 
+
                         // Check if maximoValue contains a comma
                         if (maximoValue.Contains(","))
                         {
@@ -369,6 +370,7 @@ namespace ExcelHierarchyConversion_InterOp
 
                             updList[i][19] = "Yellow";
                         }
+
 
                         else
                         {
@@ -719,14 +721,20 @@ namespace ExcelHierarchyConversion_InterOp
 
                 if (maximoEq.Contains(","))
                 {
-                    string errorMessage = string.Format($"Duplicate Maximo equimpent Number Found at {transformedData.IndexOf(item) + 2} row");
+                    string errorMessage = string.Format($" ({transformedData.IndexOf(item) + 2})");
 
-                    if (checkBox_LogErrors.Checked)
-                    {
 
-                        LogDuplicateMaximoError(errorMessage, logFilePath);
-                    }
+                    LogDuplicateMaximoError(errorMessage, logFilePath);
+
                 }   // handling the condition where maximo Equipment number is more than 1
+
+                if (maximoEq.Contains("|") || maximoEq.Contains("/") || maximoEq.Contains("-"))
+                {
+
+                    string errorMessage = string.Format($"<{transformedData.IndexOf(item) + 2}>\n");
+                    LogDuplicateMaximoError(errorMessage, logFilePath);
+
+                }
 
                 updatedItem[11] = maker;      // MAKER
                 updatedItem[12] = modelType;  // MODEL
@@ -744,11 +752,10 @@ namespace ExcelHierarchyConversion_InterOp
 
                 if (count > 1)
                 {
-                    if (checkBox_LogErrors.Checked)
-                    {
 
-                        LogError($"Data Mismatched at [{(transformedData.IndexOf(item) + 2)}] Row\n", logFilePath);
-                    }
+
+                    LogError($"[{(transformedData.IndexOf(item) + 2)}]\n", logFilePath);
+
 
                     continue;
                 }
@@ -773,7 +780,6 @@ namespace ExcelHierarchyConversion_InterOp
         public void SetVisiblityOfElements(bool visiblity)
         {
             CheckBox_splitFiles.Enabled = visiblity;
-            checkBox_LogErrors.Enabled = visiblity;
             uploadButton.Enabled = visiblity;
             inputPathTextBox.Enabled = visiblity;
             outputButton.Enabled = visiblity;
@@ -801,30 +807,44 @@ namespace ExcelHierarchyConversion_InterOp
         /// <param name="logFilePath">String specifying the path to the log file.</param>
         public void LogError(string errorMessage, string logFilePath)
         {
-
             try
             {
-                // If it's the first error, create a new log file
+                // If it's the first error, create a new log file and write the header
                 if (!File.Exists(logFilePath))
                 {
                     using (StreamWriter writer = new StreamWriter(logFilePath))
                     {
-                        writer.WriteLine($"{DateTime.Now} - {errorMessage}");
+                        WriteLogHeader(writer);
+                        WriteErrorMessage(writer, errorMessage);
                     }
                 }
                 else
                 {
-                    // If it's a subsequent error, append to the existing log file
+                    // If it's a subsequent error, append to the existing log file without the header
                     using (StreamWriter writer = new StreamWriter(logFilePath, true))
                     {
-                        writer.WriteLine($"{DateTime.Now} - {errorMessage}");
+                        WriteErrorMessage(writer, errorMessage);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error logging to file: {ex.Message}");
+                // Handle exceptions or log them as needed
+                Console.WriteLine($"Error logging: {ex.Message}");
             }
+        }
+
+        private void WriteLogHeader(StreamWriter writer)
+        {
+            writer.WriteLine("() The Row Number present inside () denotes that it has duplicate maximo Numbers separated by comma");
+            writer.WriteLine("<> The Row Number present inside <> denotes that it has duplicate maximo numbers separated by a character other than comma");
+            writer.WriteLine("[] The Row number present inside [] denotes that data mismatched at that row");
+            writer.WriteLine(); // Add a blank line after the header
+        }
+
+        private void WriteErrorMessage(StreamWriter writer, string errorMessage)
+        {
+            writer.WriteLine($"{errorMessage}");
         }
 
         /// <summary>
@@ -895,6 +915,7 @@ namespace ExcelHierarchyConversion_InterOp
 
             else
             {
+                label_operationStatus = "";
                 label_operationStatus.Visible = true;
                 label_operationStatus.Font = new Font(label_operationStatus.Font, FontStyle.Bold);
 
@@ -929,29 +950,26 @@ namespace ExcelHierarchyConversion_InterOp
                     excelApp = new App();
 
 
-                    if (!alreadyDone)
+                    try
                     {
-                        // Ins collection
                         COMAddIns comAddIns = excelApp.COMAddIns;
-                        //MessageBox.Show(comAddIns.Count.ToString());
-                        // Loop through each COM Add-In
-                        foreach (COMAddIn comAddIn in comAddIns)
+                        for (int i = 1; i <= comAddIns.Count; i++)
                         {
-                            // Display the name and status of the COM Add-In
-                            // MessageBox.Show($"COM Add-In Name: {comAddIn.Description}");
-                            //  MessageBox.Show($"COM Add-In Status: {(comAddIn.Connect ? "Connected" : "Disconnected")}");
+                            COMAddIn comAddIn = comAddIns.Item(i);
                             if (comAddIn.Connect)
                             {
                                 if (enabledAddIns.ContainsKey(comAddIn.Description))
                                 {
-                                    enabledAddIns.Add(comAddIn.Description, comAddIn.Connect);
+                                    enabledAddIns[comAddIn.Description] = false;
                                 }
-                                comAddIn.Connect = false;
-                                alreadyDone = true;
-                                // MessageBox.Show($"disabled ,{comAddIn.Description}");
                             }
                         }
+
                     }
+                    catch (Exception ex)
+                    {
+
+                    } //Handling addins
 
                     label_operationStatus.Text = "Opening Excel Application";
                     excelApp.ScreenUpdating = false;
@@ -1018,7 +1036,10 @@ namespace ExcelHierarchyConversion_InterOp
 
                     List<EmptyCodeJobSheetData> emptyJobSheetData;
                     emptyJobSheetData = obj_Jobsheet.EmptyReadDataFromJobSheet(jobSheetWorksheet);
-                    totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData, emptyJobSheetData);
+
+                    EquipmentNo obj_eqNo = new EquipmentNo();
+                    Dictionary<string, List<EquipmentNo>> eqNoData = obj_eqNo.ReadDataFromMaximoSheetEqNo(maximoWorksheet);
+                    totalData = obj_OutputSheetData.MapDataToOutputSheet(updatedData, jobSheetData, maximoSheetData, emptyJobSheetData, eqNoData);
 
                     Workbook outworkbook = excelApp.Workbooks.Open(templateFilePath);
                     Worksheet worksheeeeet = outworkbook.Sheets[1];
@@ -1115,6 +1136,7 @@ namespace ExcelHierarchyConversion_InterOp
                     label_operationStatus.Visible = false;
                     label_fixed.Visible = false;
                     SetVisiblityOfElements(true);
+                    progressBar1.Visible = false;
                     ReleaseResources();
                 }
 
@@ -1123,34 +1145,24 @@ namespace ExcelHierarchyConversion_InterOp
 
         static void EnableAddIns(Dictionary<string, bool> addIns, App app)
         {
-            //excelApp.Visible = false; // Set to false to prevent Excel from being visible to the user
-
             try
             {
-                // Get the Add-Ins collection
                 COMAddIns excelAddIns = app.COMAddIns;
-
 
                 foreach (var kvp in addIns)
                 {
-                    // Loop through each add-in stored in the dictionary
-                    foreach (COMAddIn comAddIn in excelAddIns)
+                    // Look for the COM Add-In by Description
+                    COMAddIn comAddIn = excelAddIns.Cast<COMAddIn>()
+                                                     .FirstOrDefault(addIn => addIn.Description == kvp.Key);
+                    if (comAddIn != null)
                     {
-                        // Check if the add-in name matches the desired key
-                        if (comAddIn.Description == kvp.Key)
-                        {
-                            // Found the desired add-in, assign it to the addIn variable
-                            comAddIn.Connect = kvp.Value;
-                          //  MessageBox.Show($"Add-In '{comAddIn.Description}' has been {(kvp.Value ? "enabled" : "disabled")}");
-                            break; // Exit the loop since we found the add-in
-                        }
+                        // Enable or disable the COM Add-In
+                        comAddIn.Connect = kvp.Value;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error enabling add-ins: " + ex.Message);
-              //  MessageBox.Show(ex.ToString());
             }
         }
 
@@ -1209,22 +1221,10 @@ namespace ExcelHierarchyConversion_InterOp
         }
         private void exitButton_Click(object sender, EventArgs e)
         {
-            DialogResult result;
-            //EnableAddIns(enabledAddIns, excelApp);
-            if (progressBar1.Visible)
-            {
-                result = MessageBox.Show("Current Process Will be Terminated, Are you Sure you want to Exit?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            }
-            else
-            {
-                result = MessageBox.Show("Are you Sure you want to Exit?", "", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            }
 
-            if (result == DialogResult.Yes)
-            {
-                ReleaseResources();
-                Environment.Exit(0); // Exit the application
-            }
+            ReleaseResources();
+            Environment.Exit(0); // Exit the application
+
             // If the user selects "No", do nothing and let the application continue
         }
 

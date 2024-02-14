@@ -16,13 +16,13 @@ namespace ExcelHierarchyConversion_InterOp
         [STAThread]
         static void Main()
         {
-            if (!IsRunAsAdmin())
+          /*  if (!IsRunAsAdmin())
             {
                 // Restart the application with administrative privileges
                 ElevatePermissions();
                 //MessageBox.Show("Admin : true");
                 return;
-            }
+            }*/
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new ExcelHierarchyCon());

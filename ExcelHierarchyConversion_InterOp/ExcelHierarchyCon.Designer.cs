@@ -42,7 +42,6 @@ namespace ExcelHierarchyConversion_InterOp
             this.inputPathTextBox = new System.Windows.Forms.TextBox();
             this.verificationPathTextBox = new System.Windows.Forms.TextBox();
             this.uploadVerificationButton = new System.Windows.Forms.Button();
-            this.checkBox_LogErrors = new System.Windows.Forms.CheckBox();
             this.CheckBox_splitFiles = new System.Windows.Forms.CheckBox();
             this.txtBox_inputPathMaximo = new System.Windows.Forms.TextBox();
             this.btn_UploadMaximoSheet = new System.Windows.Forms.Button();
@@ -162,25 +161,12 @@ namespace ExcelHierarchyConversion_InterOp
             this.uploadVerificationButton.UseVisualStyleBackColor = false;
             this.uploadVerificationButton.Click += new System.EventHandler(this.uploadVerificationButton_Click);
             // 
-            // checkBox_LogErrors
-            // 
-            this.checkBox_LogErrors.AutoSize = true;
-            this.checkBox_LogErrors.BackColor = System.Drawing.Color.LightGray;
-            this.checkBox_LogErrors.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkBox_LogErrors.Location = new System.Drawing.Point(151, 259);
-            this.checkBox_LogErrors.Name = "checkBox_LogErrors";
-            this.checkBox_LogErrors.Size = new System.Drawing.Size(171, 17);
-            this.checkBox_LogErrors.TabIndex = 13;
-            this.checkBox_LogErrors.Text = "Create Log File For Errors";
-            this.checkBox_LogErrors.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox_LogErrors.UseVisualStyleBackColor = false;
-            // 
             // CheckBox_splitFiles
             // 
             this.CheckBox_splitFiles.AutoSize = true;
             this.CheckBox_splitFiles.BackColor = System.Drawing.Color.LightGray;
             this.CheckBox_splitFiles.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CheckBox_splitFiles.Location = new System.Drawing.Point(151, 282);
+            this.CheckBox_splitFiles.Location = new System.Drawing.Point(151, 259);
             this.CheckBox_splitFiles.Name = "CheckBox_splitFiles";
             this.CheckBox_splitFiles.Size = new System.Drawing.Size(81, 17);
             this.CheckBox_splitFiles.TabIndex = 14;
@@ -242,7 +228,6 @@ namespace ExcelHierarchyConversion_InterOp
             this.Controls.Add(this.btn_UploadMaximoSheet);
             this.Controls.Add(this.txtBox_inputPathMaximo);
             this.Controls.Add(this.CheckBox_splitFiles);
-            this.Controls.Add(this.checkBox_LogErrors);
             this.Controls.Add(this.uploadVerificationButton);
             this.Controls.Add(this.verificationPathTextBox);
             this.Controls.Add(this.inputPathTextBox);
@@ -273,7 +258,6 @@ namespace ExcelHierarchyConversion_InterOp
         private System.Windows.Forms.TextBox inputPathTextBox;
         private System.Windows.Forms.TextBox verificationPathTextBox;
         private System.Windows.Forms.Button uploadVerificationButton;
-        private System.Windows.Forms.CheckBox checkBox_LogErrors;
         private System.Windows.Forms.CheckBox CheckBox_splitFiles;
         private System.Windows.Forms.TextBox txtBox_inputPathMaximo;
         private System.Windows.Forms.Button btn_UploadMaximoSheet;
