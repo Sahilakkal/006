@@ -104,7 +104,6 @@ namespace ExcelHierarchyConversion_InterOp
                         if (cellData != "" && !string.IsNullOrWhiteSpace(cellData))
                         {
                             rowData.Add(cellData);
-
                         }
 
                         else
@@ -875,9 +874,6 @@ namespace ExcelHierarchyConversion_InterOp
         /// <param name="outputData">List of lists containing data to be split based on keyword "Group level 2"</param>
         /// <returns>returns a list of lists of lists, where each inner list represents a group of rows that share the same splitKeyword</returns>
         /// 
-
-
-
 
         private void convertButton_Click(object sender, EventArgs e)
         {

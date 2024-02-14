@@ -304,11 +304,14 @@ namespace ExcelHierarchyConversion_InterOp
 
                 while (countMaximo != rowData.dataFromMaximoSheet.MaximoJobPlanNumber.Count)
                 {
-                    dataRow = dataTable.Rows.Add();
-                    rowsAdded++;
 
+                    if (countEmptyJob!=0|| countJob!=0)
+                    {
+                        dataRow = dataTable.Rows.Add();
+                        rowsAdded++;
+                        AddStaticColumns(i, rowData, ref dataRow, rowsAdded);
 
-                    AddStaticColumns(i, rowData, ref dataRow, rowsAdded);
+                    }
                     dataRow[16] = rowData.dataFromMaximoSheet.MaximoPMDetails[countMaximo];
                     dataRow[17] = rowData.dataFromMaximoSheet.MaximoJobPlanNumber[countMaximo];
                     dataRow[18] = rowData.dataFromMaximoSheet.MaximoJobPlanTaskNumberAndDetails[countMaximo];
@@ -337,8 +340,6 @@ namespace ExcelHierarchyConversion_InterOp
                     countMaximo++;
 
                 }
-
-
             }
 
 

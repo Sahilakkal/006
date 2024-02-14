@@ -15,7 +15,9 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> Interval { get; set; } //  // Maps with Frequency
         public List<string> CounterType { get; set; } //  // Maps with Frequency Duration
         public List<string> LastDoneDate { get; set; } // Maps with Last Done Date
-        public List<string> LastDoneValue { get; set; } // Maps with At reading
+        public List<string> LastDoneValue { get; set; } // Maps w
+                                                        //
+                                                        // ith At reading
         public List<string> MaximoJobPlanNumber { get; set; }    // Maps With JP Number [insert rows] 
         public List<string> MaximoJobPlanTaskNumberAndDetails { get; set; }    // merge all the Job task number and job task description containing same JP Number
         public List<string> MaximoPMDetails { get; set; }
@@ -25,6 +27,10 @@ namespace ExcelHierarchyConversion_InterOp
         public List<string> SchedulingType { get; set; }
         public int rowNumber { get; set; } = 0;
         public List<string> ReminderWindowUnit { get; set; }
+
+        public List<string> EqNumber { get; set; }
+        public List<string> EqDesc { get; set; }
+
 
         public MaximoSheetData()
         {
@@ -41,6 +47,9 @@ namespace ExcelHierarchyConversion_InterOp
             Window = new List<string>();
             SchedulingType = new List<string>();
             ReminderWindowUnit = new List<string>();
+            EqNumber = new List<string>();
+            EqDesc = new List<string>();
+            
 
         }
 
